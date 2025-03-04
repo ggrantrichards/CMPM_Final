@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft AI Builder</title>
+</head>
+
+<body>
+    <h1>Minecraft AI Builder</h1>
+    <form id="buildForm">
+        <label for="size">Size (2-50):</label>
+        <input type="number" id="size" name="size" min="2" max="50" required>
+        <br>
+        <label for="type">Type of Build:</label>
+        <select id="type" name="type" required>
+            <option value="house">House</option>
+            <option value="castle">Castle</option>
+            <option value="cabin">Cabin</option>
+        </select>
+        <br>
+        <button type="submit">Generate Build</button>
+    </form>
+
+    <script>
+        document.getElementById('buildForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const size = document.getElementById('size').value;
+            const type = document.getElementById('type').value;
+
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ size: size, type: type }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Build generated successfully! Check the backend for the output files.');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>
