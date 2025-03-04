@@ -18,7 +18,7 @@ def generate_build_with_gemini(size, build_type):
         2. **Roof**: The top layer (last layer) must be a solid roof made of appropriate blocks (e.g., OAK_PLANKS, STONE_BRICKS, etc.).
         3. **Traversable**: The player (1x1x2 blocks) must be able to move through the build without obstruction. Ensure there are clear paths and no floating blocks. 
            Also ensure that each build has an entrance (I.E. Air Blocks on one of the borders of the build fit for the player's size). Builds should be generally hollow with plenty of space for player movement. 
-           Only crowd the inside space with useful blocks like crafting tables and furnaces when the build type permits it.
+           DO not crowd the inside space with useful blocks like crafting tables and furnaces when the build type permits it use blocks sparingly on the inside.
         4. **Aesthetic**: The build should align with the chosen style (e.g., a castle should look like a castle, a house should look like a house).
         5. **Blocks**: Only use the following block abbreviations as all blocks listed take up a 1x1x1 space:
            - "AA": "AIR",
