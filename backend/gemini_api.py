@@ -1,5 +1,6 @@
 import google.generativeai as genai
 import json
+import re
 
 # Configure the Gemini API
 genai.configure(api_key="AIzaSyD35idMpAjsv_t_uoq5jx-7UWEdmDxsB2E")
@@ -57,14 +58,14 @@ def generate_build_with_gemini(size, build_type):
         print("Gemini API Raw Response:")
         print(response.text)
 
-        # Parse the response into layers
-        try:
-            # Attempt to parse the response as JSON
-            response_json = json.loads(response.text)
-            layers = response_json.get("layers", [])
-        except json.JSONDecodeError:
-            # If JSON parsing fails, assume the response is a plain text list
-            layers = eval(response.text)  # Fallback to eval (use with caution)
+        # Extract JSON from the Markdown code block
+        json_string = re.search(r'```json\s*({.*?})\s*```', response.text, re.DOTALL)
+        if not json_string:
+            raise ValueError("No valid JSON found in the response.")
+
+        # Parse the JSON string
+        response_json = json.loads(json_string.group(1))
+        layers = response_json.get("layers", [])
 
         return layers
     except Exception as e:
