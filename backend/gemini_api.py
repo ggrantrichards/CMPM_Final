@@ -13,40 +13,36 @@ def generate_build_with_gemini(size, build_type):
         # Create a prompt for the Gemini API
         prompt = f"""
         Generate a Minecraft {build_type} build with a size of {size}x{size}. 
+        Please keep in mind the Player mut be able to move throughout these builds and takes up a 3D space of 1 width 1 length and 2 height.
         Provide the block layout for each layer from bottom to top using the following abbreviations:
-        - ST: STONE
-        - GR: GRASS_BLOCK
-        - DT: DIRT
-        - WD: OAK_PLANKS
-        - GL: GLASS
-        - BR: BRICKS
-        - SB: STONE_BRICKS
-        - SN: SAND
-        - SP: SPRUCE_PLANKS
-        - IR: IRON_BLOCK
-        - GD: GOLD_BLOCK
-        - DM: DIAMOND_BLOCK
-        - LB: LAPIS_BLOCK
-        - EM: EMERALD_BLOCK
-        - RD: REDSTONE_BLOCK
-        - OB: OBSIDIAN
-        - CL: CLAY
-        - SL: STONE_SLAB
-        - TR: TORCH
-        - DR: OAK_DOOR
-        - WN: GLASS_PANE
-        - RF: OAK_STAIRS
-        - FL: OAK_PLANKS
-        - WL: COBBLESTONE_WALL
-        - CH: CHEST
-        - LT: LANTERN
-        - FW: FURNACE
-        - BD: BED
-        - BK: BOOKSHELF
-        - CB: COBBLESTONE
-        - SD: SANDSTONE
-        - NT: NETHER_BRICKS
-        - EB: END_STONE_BRICKS
+        - "AA": "AIR",
+        - "ST": "STONE",
+        - "GR": "GRASS_BLOCK",
+        - "DT": "DIRT",
+        - "WD": "OAK_PLANKS",
+        - "GL": "GLASS",
+        - "BR": "BRICKS",
+        - "SB": "STONE_BRICKS",
+        - "SN": "SAND",
+        - "SP": "SPRUCE_PLANKS",
+        - "OB": "OBSIDIAN",
+        - "CL": "CLAY",
+        - "SL": "STONE_SLAB",
+        - "TR": "TORCH",
+        - "DR": "OAK_DOOR",
+        - "WN": "GLASS_PANE",
+        - "RF": "OAK_STAIRS",
+        - "FL": "OAK_PLANKS",
+        - "WL": "COBBLESTONE_WALL",
+        - "CH": "CHEST",
+        - "LT": "LANTERN",
+        - "FW": "FURNACE",
+        - "BD": "BED",
+        - "BK": "BOOKSHELF",
+        - "CB": "COBBLESTONE",
+        - "SD": "SANDSTONE",
+        - "NT": "NETHER_BRICKS",
+        - "EB": "END_STONE_BRICKS"
 
         Format the output as a JSON object with a key "layers" containing a list of layers, where each layer is a list of rows, and each row is a list of block abbreviations.
         """
