@@ -5,7 +5,7 @@ import json
 genai.configure(api_key="AIzaSyD35idMpAjsv_t_uoq5jx-7UWEdmDxsB2E")
 
 # Initialize the model
-model = genai.GenerativeModel('gemini-2.0')
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 def generate_build_with_gemini(size, build_type):
     try:
