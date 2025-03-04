@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft AI Builder</title>
+    <link rel="stylesheet" href="./static/style.css">
 </head>
 
 <body>
@@ -23,28 +24,27 @@
         <button type="submit">Generate Build</button>
     </form>
 
-    <script>
-        document.getElementById('buildForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const size = document.getElementById('size').value;
-            const type = document.getElementById('type').value;
+    <!-- Dropdown to select previously generated builds -->
+    <div class="build-selector">
+        <label for="buildSelect">Select Build:</label>
+        <select id="buildSelect">
+            <option value="">-- Select a Build --</option>
+        </select>
+    </div>
 
-            fetch('/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ size: size, type: type }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert('Build generated successfully! Check the backend for the output files.');
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-        });
-    </script>
+    <!-- Slider to navigate through layers -->
+    <div class="slider-container">
+        <label for="layerSlider">Layer:</label>
+        <input type="range" id="layerSlider" min="0" max="0" value="0">
+        <span id="currentLayer">0</span>
+    </div>
+
+    <!-- Display area for the current layer -->
+    <div class="build-display" id="buildDisplay">
+        <!-- Layer content will be displayed here -->
+    </div>
+
+    <script src="./static/script.js"></script>
 </body>
 
 </html>
