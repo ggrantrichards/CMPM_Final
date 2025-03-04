@@ -22,22 +22,25 @@ def generate():
 
     return jsonify({"status": "success", "message": "Build generated successfully!"})
 
-# List previously generated builds
 @app.route('/list-builds', methods=['GET'])
 def list_builds():
     builds = []
     if os.path.exists('output'):
         for folder in os.listdir('output'):
             if os.path.isdir(os.path.join('output', folder)):
-                parts = folder.split('_')
+                print(f"Found folder: {folder}")  # Debug statement
+                parts = folder.split('_', 2)  # Split into 3 parts at most
                 if len(parts) == 3:
                     build_type, size, timestamp = parts
+                    print(f"Parsed: type={build_type}, size={size}, timestamp={timestamp}")  # Debug statement
                     builds.append({
                         "folder": folder,
                         "type": build_type,
-                        "size": size.split('x')[0],
-                        "timestamp": timestamp
+                        "size": size.split('x')[0],  # Extract size (e.g., "10x10" -> "10")
+                        "timestamp": timestamp  # Keep the full timestamp
                     })
+                else:
+                    print(f"Skipping folder due to incorrect format: {folder}")  # Debug statement
     return jsonify({"builds": builds})
 
 # Load a specific build
