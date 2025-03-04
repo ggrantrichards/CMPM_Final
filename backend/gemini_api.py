@@ -17,8 +17,8 @@ def generate_build_with_gemini(size, build_type):
         1. **Floor**: The bottom layer (layer 0) must be a solid floor made of appropriate blocks (e.g., STONE, OAK_PLANKS, etc.).
         2. **Roof**: The top layer (last layer) must be a solid roof made of appropriate blocks (e.g., OAK_PLANKS, STONE_BRICKS, etc.).
         3. **Traversable**: The player (1x1x2 blocks) must be able to move through the build without obstruction. Ensure there are clear paths and no floating blocks. 
-        Also ensure that each build has an entrance (I.E. Air Blocks on one of the borders of the build fit for the player's size). Builds should be generally hollow with plenty of space for player movement. 
-        Only crowd the inside space with usefule blocks like crafting tables and furnaces when the build type permits it.
+           Also ensure that each build has an entrance (I.E. Air Blocks on one of the borders of the build fit for the player's size). Builds should be generally hollow with plenty of space for player movement. 
+           Only crowd the inside space with useful blocks like crafting tables and furnaces when the build type permits it.
         4. **Aesthetic**: The build should align with the chosen style (e.g., a castle should look like a castle, a house should look like a house).
         5. **Blocks**: Only use the following block abbreviations as all blocks listed take up a 1x1x1 space:
            - "AA": "AIR",
@@ -66,5 +66,8 @@ def generate_build_with_gemini(size, build_type):
 
         return layers
     except Exception as e:
-        print(f"An error occurred while calling the Gemini API: {e}")
+        if "finish_reason" in str(e) and "4" in str(e):
+            print("Error: The model detected copyrighted material and cannot generate the build.")
+        else:
+            print(f"An error occurred while calling the Gemini API: {e}")
         return []
