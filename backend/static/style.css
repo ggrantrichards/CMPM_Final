@@ -2,49 +2,102 @@
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
+  background-color: #1e1e1e; /* Dark grey background */
+  color: #ffffff; /* White text */
 }
 
 h1 {
-  color: #333;
+  color: #4caf50; /* Green color for headings */
+  text-align: center;
 }
 
 form {
   margin-bottom: 20px;
+  background-color: #2d2d2d; /* Slightly lighter grey for form background */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .build-display {
   font-family: monospace;
   white-space: pre;
-  background-color: #f4f4f4;
+  background-color: #2d2d2d; /* Slightly lighter grey for build display */
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #4caf50; /* Green border */
   margin-top: 20px;
+  color: #ffffff; /* White text */
+  border-radius: 8px;
 }
 
 .slider-container,
 .build-selector {
   margin-top: 20px;
+  background-color: #2d2d2d; /* Slightly lighter grey for containers */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 label {
   display: block;
   margin-bottom: 5px;
+  color: #4caf50; /* Green color for labels */
 }
 
 input[type="number"],
 select {
   padding: 5px;
   margin-bottom: 10px;
+  background-color: #3d3d3d; /* Dark grey for input fields */
+  color: #ffffff; /* White text */
+  border: 1px solid #4caf50; /* Green border */
+  border-radius: 4px;
 }
 
 button {
   padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  background-color: #4caf50; /* Green background for buttons */
+  color: white; /* White text */
   border: none;
   cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Additional styling for the slider */
+input[type="range"] {
+  width: 100%;
+  background-color: #3d3d3d; /* Dark grey for slider track */
+  border-radius: 8px;
+  height: 8px;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+input[type="range"]:hover {
+  opacity: 1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #4caf50; /* Green slider thumb */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background-color: #4caf50; /* Green slider thumb */
+  border-radius: 50%;
+  cursor: pointer;
 }
