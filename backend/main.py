@@ -16,7 +16,7 @@ def generate():
     size = int(data['size'])
     description = data['description'].strip()
 
-    # Generate the build using the free-text description
+    # Generate the build using the free-text description.
     generate_build(size, description)
 
     return jsonify({"status": "success", "message": "Build generated successfully!"})
@@ -27,12 +27,13 @@ def list_builds():
     if os.path.exists('output'):
         for folder in os.listdir('output'):
             if os.path.isdir(os.path.join('output', folder)):
+                # Expected folder format: {safe_description}_{size}x{size}_{timestamp}
                 parts = folder.split('_', 2)
                 if len(parts) == 3:
                     build_desc, size, timestamp = parts
                     builds.append({
                         "folder": folder,
-                        "type": build_desc,
+                        "description": build_desc,
                         "size": size.split('x')[0],
                         "timestamp": timestamp
                     })

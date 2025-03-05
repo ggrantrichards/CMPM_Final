@@ -46,6 +46,7 @@ label {
 }
 
 input[type="number"],
+input[type="text"],
 select {
   padding: 5px;
   margin-bottom: 10px;
