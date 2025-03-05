@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, send_file
 from build_generator import generate_build
 import os
 import json
@@ -22,6 +22,7 @@ def generate():
 
     return jsonify({"status": "success", "message": "Build generated successfully!"})
 
+# List previously generated builds
 @app.route('/list-builds', methods=['GET'])
 def list_builds():
     builds = []
@@ -62,6 +63,24 @@ def load_build():
                 layers.append(layer)
 
     return jsonify({"layers": layers})
+
+# Download schematic file
+@app.route('/download-schematic', methods=['GET'])
+def download_schematic():
+    folder = request.args.get('folder')
+    if not folder:
+        return jsonify({"error": "Folder not specified"}), 400
+
+    build_path = os.path.join('output', folder)
+    if not os.path.exists(build_path):
+        return jsonify({"error": "Build not found"}), 404
+
+    schematic_file = f"{folder}.schem"
+    schematic_path = os.path.join(build_path, schematic_file)
+    if not os.path.exists(schematic_path):
+        return jsonify({"error": "Schematic file not found"}), 404
+
+    return send_file(schematic_path, as_attachment=True)
 
 if __name__ == '__main__':
     if not os.path.exists('output'):

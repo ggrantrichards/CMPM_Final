@@ -101,3 +101,18 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   cursor: pointer;
 }
+
+#downloadButton {
+  padding: 10px 20px;
+  background-color: #4caf50; /* Green background */
+  color: white; /* White text */
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+#downloadButton:hover {
+  background-color: #45a049; /* Darker green on hover */
+}

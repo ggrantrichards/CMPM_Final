@@ -100,5 +100,17 @@ function displayLayer(layerIndex) {
   }
 }
 
+// Add download button functionality
+document
+  .getElementById("downloadButton")
+  .addEventListener("click", function () {
+    const selectedBuild = document.getElementById("buildSelect").value;
+    if (selectedBuild) {
+      window.location.href = `/download-schematic?folder=${selectedBuild}`;
+    } else {
+      alert("Please select a build to download.");
+    }
+  });
+
 // Initial load of builds
 loadBuilds();
