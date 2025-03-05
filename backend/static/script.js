@@ -3,31 +3,27 @@ let builds = {}; // Store builds in memory
 let currentBuild = null; // Currently selected build
 
 // Handle form submission
-document
-  .getElementById("buildForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    const size = document.getElementById("size").value;
-    const type = document.getElementById("type").value;
+document.getElementById("buildForm").addEventListener("submit", function (event) {
+  event.preventDefault();
+  const size = document.getElementById("size").value;
+  const description = document.getElementById("description").value;
 
-    fetch("/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ size: size, type: type }),
+  fetch("/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ size: size, description: description }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      alert("Build generated successfully! Check the backend for the output files.");
+      loadBuilds(); // Reload the list of builds
     })
-      .then((response) => response.json())
-      .then((data) => {
-        alert(
-          "Build generated successfully! Check the backend for the output files."
-        );
-        loadBuilds(); // Reload the list of builds
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  });
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});
 
 // Load the list of builds from the server
 function loadBuilds() {
@@ -49,34 +45,30 @@ function loadBuilds() {
 }
 
 // Handle build selection
-document
-  .getElementById("buildSelect")
-  .addEventListener("change", function (event) {
-    const selectedBuild = event.target.value;
-    if (selectedBuild) {
-      fetch(`/load-build?folder=${selectedBuild}`)
-        .then((response) => response.json())
-        .then((data) => {
-          currentBuild = data.layers;
-          updateLayerSlider(currentBuild.length);
-          displayLayer(0); // Display the first layer
-        })
-        .catch((error) => {
-          console.error("Error loading build:", error);
-        });
-    } else {
-      currentBuild = null;
-      document.getElementById("buildDisplay").textContent = "";
-    }
-  });
+document.getElementById("buildSelect").addEventListener("change", function (event) {
+  const selectedBuild = event.target.value;
+  if (selectedBuild) {
+    fetch(`/load-build?folder=${selectedBuild}`)
+      .then((response) => response.json())
+      .then((data) => {
+        currentBuild = data.layers;
+        updateLayerSlider(currentBuild.length);
+        displayLayer(0); // Display the first layer
+      })
+      .catch((error) => {
+        console.error("Error loading build:", error);
+      });
+  } else {
+    currentBuild = null;
+    document.getElementById("buildDisplay").textContent = "";
+  }
+});
 
 // Handle layer slider change
-document
-  .getElementById("layerSlider")
-  .addEventListener("input", function (event) {
-    const layerIndex = parseInt(event.target.value);
-    displayLayer(layerIndex);
-  });
+document.getElementById("layerSlider").addEventListener("input", function (event) {
+  const layerIndex = parseInt(event.target.value);
+  displayLayer(layerIndex);
+});
 
 // Update the layer slider based on the number of layers
 function updateLayerSlider(numLayers) {
@@ -95,8 +87,7 @@ function displayLayer(layerIndex) {
     document.getElementById("buildDisplay").textContent = layerContent;
     document.getElementById("currentLayer").textContent = layerIndex;
   } else {
-    document.getElementById("buildDisplay").textContent =
-      "No layer data available.";
+    document.getElementById("buildDisplay").textContent = "No layer data available.";
   }
 }
 

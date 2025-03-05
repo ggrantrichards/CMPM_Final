@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from build_generator import generate_build
 import os
-import json
 
 app = Flask(__name__)
 
@@ -15,10 +14,10 @@ def serve_frontend():
 def generate():
     data = request.json
     size = int(data['size'])
-    build_type = data['type']
+    description = data['description'].strip()
 
-    # Generate the build
-    generate_build(size, build_type)
+    # Generate the build using the free-text description
+    generate_build(size, description)
 
     return jsonify({"status": "success", "message": "Build generated successfully!"})
 
@@ -28,19 +27,15 @@ def list_builds():
     if os.path.exists('output'):
         for folder in os.listdir('output'):
             if os.path.isdir(os.path.join('output', folder)):
-                print(f"Found folder: {folder}")  # Debug statement
-                parts = folder.split('_', 2)  # Split into 3 parts at most
+                parts = folder.split('_', 2)
                 if len(parts) == 3:
-                    build_type, size, timestamp = parts
-                    print(f"Parsed: type={build_type}, size={size}, timestamp={timestamp}")  # Debug statement
+                    build_desc, size, timestamp = parts
                     builds.append({
                         "folder": folder,
-                        "type": build_type,
-                        "size": size.split('x')[0],  # Extract size (e.g., "10x10" -> "10")
-                        "timestamp": timestamp  # Keep the full timestamp
+                        "type": build_desc,
+                        "size": size.split('x')[0],
+                        "timestamp": timestamp
                     })
-                else:
-                    print(f"Skipping folder due to incorrect format: {folder}")  # Debug statement
     return jsonify({"builds": builds})
 
 # Load a specific build

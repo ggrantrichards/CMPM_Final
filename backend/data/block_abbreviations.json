@@ -4,11 +4,15 @@
     "GR": "GRASS_BLOCK",
     "DT": "DIRT",
     "WD": "OAK_PLANKS",
+    "OS": "OAK_STAIRS",
+    "OSL": "OAK_SLAB",
     "GL": "GLASS",
     "BR": "BRICKS",
     "SB": "STONE_BRICKS",
     "SN": "SAND",
     "SP": "SPRUCE_PLANKS",
+    "SS": "SPRUCE_STAIRS",
+    "SSL": "SPRUCE_SLAB",
     "OB": "OBSIDIAN",
     "CL": "CLAY",
     "TR": "TORCH",
@@ -23,4 +27,5 @@
     "SD": "SANDSTONE",
     "NT": "NETHER_BRICKS",
     "EB": "END_STONE_BRICKS"
-}
+  }
+  
