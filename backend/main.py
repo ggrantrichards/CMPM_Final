@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, request, jsonify, send_from_directory, send_file, Response
 from build_generator import generate_build
 import os
 import json
+import time
 
 app = Flask(__name__)
 
@@ -81,6 +82,16 @@ def download_schematic():
         return jsonify({"error": "Schematic file not found"}), 404
 
     return send_file(schematic_path, as_attachment=True)
+
+# SSE endpoint to stream progress updates
+@app.route('/progress')
+def progress():
+    def generate():
+        for i in range(101):
+            yield f"data: {i}\n\n"
+            time.sleep(0.1)  # Simulate progress update delay
+
+    return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
     if not os.path.exists('output'):

@@ -139,3 +139,16 @@ document
 
 // Initial load of builds
 loadBuilds();
+
+// SSE for progress updates
+const eventSource = new EventSource("/progress");
+eventSource.onmessage = function (event) {
+  const progress = parseInt(event.data);
+  const progressBar = document.getElementById("progressBar");
+  const progressPercentage = document.getElementById("progressPercentage");
+  progressBar.value = progress;
+  progressPercentage.textContent = `${progress}%`;
+  if (progress >= 100) {
+    eventSource.close();
+  }
+};
