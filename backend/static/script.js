@@ -10,6 +10,16 @@ document
     const size = document.getElementById("size").value;
     const type = document.getElementById("type").value;
 
+    // Show the progress bar
+    const progressBarContainer = document.getElementById(
+      "progressBarContainer"
+    );
+    const progressBar = document.getElementById("progressBar");
+    const progressPercentage = document.getElementById("progressPercentage");
+    progressBarContainer.style.display = "block";
+    progressBar.value = 0;
+    progressPercentage.textContent = "0%";
+
     fetch("/generate", {
       method: "POST",
       headers: {
@@ -26,7 +36,22 @@ document
       })
       .catch((error) => {
         console.error("Error:", error);
+      })
+      .finally(() => {
+        // Hide the progress bar after completion
+        progressBarContainer.style.display = "none";
       });
+
+    // Simulate progress updates (replace this with actual progress updates from the backend)
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      progressBar.value = progress;
+      progressPercentage.textContent = `${progress}%`;
+      if (progress >= 100) {
+        clearInterval(interval);
+      }
+    }, 500);
   });
 
 // Load the list of builds from the server
