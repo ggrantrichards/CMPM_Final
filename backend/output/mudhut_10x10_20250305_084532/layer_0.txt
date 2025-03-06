@@ -1,0 +1,10 @@
+coarse_dirt coarse_dirt coarse_dirt coarse_dirt dirt dirt coarse_dirt coarse_dirt coarse_dirt coarse_dirt
+coarse_dirt dirt dirt dirt dirt dirt dirt dirt dirt coarse_dirt
+coarse_dirt dirt dirt dirt dirt dirt dirt dirt dirt coarse_dirt
+coarse_dirt dirt dirt dirt dirt dirt dirt dirt dirt coarse_dirt
+dirt dirt dirt dirt dirt dirt dirt dirt dirt dirt
+dirt dirt dirt dirt dirt dirt dirt dirt dirt dirt
+coarse_dirt dirt dirt dirt dirt dirt dirt dirt dirt coarse_dirt
+coarse_dirt dirt dirt dirt dirt dirt dirt dirt dirt coarse_dirt
+coarse_dirt dirt dirt dirt dirt dirt dirt dirt dirt coarse_dirt
+coarse_dirt coarse_dirt coarse_dirt coarse_dirt dirt dirt coarse_dirt coarse_dirt coarse_dirt coarse_dirt

@@ -1,13 +1,11 @@
-// script.js
-let builds = {}; // Store builds in memory
 let currentBuild = null; // Currently selected build
 
-// Handle form submission
+// Handle form submission: now using free-text description.
 document.getElementById("buildForm").addEventListener("submit", function (event) {
   event.preventDefault();
   const size = document.getElementById("size").value;
   const description = document.getElementById("description").value;
-
+  
   fetch("/generate", {
     method: "POST",
     headers: {
@@ -15,14 +13,14 @@ document.getElementById("buildForm").addEventListener("submit", function (event)
     },
     body: JSON.stringify({ size: size, description: description }),
   })
-    .then((response) => response.json())
-    .then((data) => {
-      alert("Build generated successfully! Check the backend for the output files.");
-      loadBuilds(); // Reload the list of builds
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("message").textContent = data.message;
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    document.getElementById("message").textContent = "Error generating build.";
+  });
 });
 
 // Load the list of builds from the server
@@ -35,7 +33,7 @@ function loadBuilds() {
       data.builds.forEach((build) => {
         const option = document.createElement("option");
         option.value = build.folder;
-        option.textContent = `${build.type} (${build.size}x${build.size}) - ${build.timestamp}`;
+        option.textContent = `${build.description} (${build.size}x${build.size}) - ${build.timestamp}`;
         buildSelect.appendChild(option);
       });
     })
@@ -44,7 +42,7 @@ function loadBuilds() {
     });
 }
 
-// Handle build selection
+// Handle build selection from the dropdown
 document.getElementById("buildSelect").addEventListener("change", function (event) {
   const selectedBuild = event.target.value;
   if (selectedBuild) {

@@ -1,0 +1,15 @@
+oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log
+oak_log oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks air oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks oak_log
+oak_log oak_planks glass_pane glass_pane glass_pane glass_pane oak_planks air oak_planks glass_pane glass_pane glass_pane glass_pane oak_planks oak_log
+oak_log oak_planks glass_pane air air glass_pane oak_planks air oak_planks glass_pane air air glass_pane oak_planks oak_log
+oak_log oak_planks glass_pane air air glass_pane oak_planks air oak_planks glass_pane air air glass_pane oak_planks oak_log
+oak_log oak_planks glass_pane glass_pane glass_pane glass_pane oak_planks air oak_planks glass_pane glass_pane glass_pane glass_pane oak_planks oak_log
+oak_log oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks air oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks oak_log
+oak_log air air air air air air air air air air air air air oak_log
+oak_log oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks air oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks oak_log
+oak_log oak_planks glass_pane glass_pane glass_pane glass_pane oak_planks air oak_planks glass_pane glass_pane glass_pane glass_pane oak_planks oak_log
+oak_log oak_planks glass_pane air air glass_pane oak_planks air oak_planks glass_pane air air glass_pane oak_planks oak_log
+oak_log oak_planks glass_pane air air glass_pane oak_planks air oak_planks glass_pane air air glass_pane oak_planks oak_log
+oak_log oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks air oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks oak_log
+oak_log oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks oak_door oak_planks oak_planks oak_planks oak_planks oak_planks oak_planks oak_log
+oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log oak_log
