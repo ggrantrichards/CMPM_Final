@@ -1,5 +1,3 @@
-// script.js
-let builds = {}; // Store builds in memory
 let currentBuild = null; // Currently selected build
 
 // Handle form submission
@@ -52,7 +50,7 @@ document
         clearInterval(interval);
       }
     }, 500);
-  });
+});
 
 // Load the list of builds from the server
 function loadBuilds() {
@@ -64,7 +62,7 @@ function loadBuilds() {
       data.builds.forEach((build) => {
         const option = document.createElement("option");
         option.value = build.folder;
-        option.textContent = `${build.type} (${build.size}x${build.size}) - ${build.timestamp}`;
+        option.textContent = `${build.description} (${build.size}x${build.size}) - ${build.timestamp}`;
         buildSelect.appendChild(option);
       });
     })
@@ -73,35 +71,31 @@ function loadBuilds() {
     });
 }
 
-// Handle build selection
-document
-  .getElementById("buildSelect")
-  .addEventListener("change", function (event) {
-    const selectedBuild = event.target.value;
-    if (selectedBuild) {
-      fetch(`/load-build?folder=${selectedBuild}`)
-        .then((response) => response.json())
-        .then((data) => {
-          currentBuild = data.layers;
-          updateLayerSlider(currentBuild.length);
-          displayLayer(0); // Display the first layer
-        })
-        .catch((error) => {
-          console.error("Error loading build:", error);
-        });
-    } else {
-      currentBuild = null;
-      document.getElementById("buildDisplay").textContent = "";
-    }
-  });
+// Handle build selection from the dropdown
+document.getElementById("buildSelect").addEventListener("change", function (event) {
+  const selectedBuild = event.target.value;
+  if (selectedBuild) {
+    fetch(`/load-build?folder=${selectedBuild}`)
+      .then((response) => response.json())
+      .then((data) => {
+        currentBuild = data.layers;
+        updateLayerSlider(currentBuild.length);
+        displayLayer(0); // Display the first layer
+      })
+      .catch((error) => {
+        console.error("Error loading build:", error);
+      });
+  } else {
+    currentBuild = null;
+    document.getElementById("buildDisplay").textContent = "";
+  }
+});
 
 // Handle layer slider change
-document
-  .getElementById("layerSlider")
-  .addEventListener("input", function (event) {
-    const layerIndex = parseInt(event.target.value);
-    displayLayer(layerIndex);
-  });
+document.getElementById("layerSlider").addEventListener("input", function (event) {
+  const layerIndex = parseInt(event.target.value);
+  displayLayer(layerIndex);
+});
 
 // Update the layer slider based on the number of layers
 function updateLayerSlider(numLayers) {
@@ -120,8 +114,7 @@ function displayLayer(layerIndex) {
     document.getElementById("buildDisplay").textContent = layerContent;
     document.getElementById("currentLayer").textContent = layerIndex;
   } else {
-    document.getElementById("buildDisplay").textContent =
-      "No layer data available.";
+    document.getElementById("buildDisplay").textContent = "No layer data available.";
   }
 }
 

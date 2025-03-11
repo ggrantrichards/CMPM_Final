@@ -2,15 +2,14 @@ import google.generativeai as genai
 import json
 import re
 
-# Configure the Gemini API
+# Configure the Gemini API with your API key.
 genai.configure(api_key="AIzaSyD35idMpAjsv_t_uoq5jx-7UWEdmDxsB2E")
 
-# Initialize the model
+# Initialize the model.
 model = genai.GenerativeModel('gemini-2.0-flash')
 
-def generate_build_with_gemini(size, build_type):
+def generate_build_with_gemini(size, description):
     try:
-        # Create a prompt for the Gemini API
         prompt = f"""
         Generate a Minecraft {build_type} build with a size of {size}x{size}. 
         The build must meet the following requirements:
@@ -43,29 +42,28 @@ def generate_build_with_gemini(size, build_type):
             - "NT": "minecraft:nether_brick",
             - "EB": "minecraft:end_bricks"
 
-        Format the output as a JSON object with a key "layers" containing a list of layers, where each layer is a list of rows, and each row is a list of block abbreviations.
+Format the output as a JSON object with a key "layers" containing a list of layers.
+Each layer is a list of rows, and each row is a list of block abbreviations.
+Ensure the design is realistic and layered (i.e., not a completely solid cube).
         """
-
-        # Call the Gemini API
         response = model.generate_content(prompt)
-
-        # Print the raw response for debugging
         print("Gemini API Raw Response:")
         print(response.text)
-
-        # Extract JSON from the Markdown code block
-        json_string = re.search(r'```json\s*({.*?})\s*```', response.text, re.DOTALL)
-        if not json_string:
-            raise ValueError("No valid JSON found in the response.")
-
-        # Parse the JSON string
-        response_json = json.loads(json_string.group(1))
+        raw_text = response.text.strip()
+        if not raw_text:
+            raise ValueError("Empty response from Gemini API.")
+        try:
+            response_json = json.loads(raw_text)
+        except Exception:
+            json_match = re.search(r'```json\s*({.*?})\s*```', raw_text, re.DOTALL)
+            if json_match:
+                response_json = json.loads(json_match.group(1))
+            else:
+                raise ValueError("No valid JSON found in the response.")
         layers = response_json.get("layers", [])
-
+        if not layers:
+            raise ValueError("JSON response does not contain 'layers' key or it is empty.")
         return layers
     except Exception as e:
-        if "finish_reason" in str(e) and "4" in str(e):
-            print("Error: The model detected copyrighted material and cannot generate the build.")
-        else:
-            print(f"An error occurred while calling the Gemini API: {e}")
+        print(f"An error occurred while calling the Gemini API: {e}")
         return []

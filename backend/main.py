@@ -6,21 +6,20 @@ import time
 
 app = Flask(__name__)
 
-# Serve the frontend (index.html)
+# Serve the frontend.
 @app.route('/')
 def serve_frontend():
     return send_from_directory('.', 'index.html')
 
-# Handle build generation requests
+# Handle build generation requests.
 @app.route('/generate', methods=['POST'])
 def generate():
     data = request.json
     size = int(data['size'])
-    build_type = data['type']
-
-    # Generate the build
-    generate_build(size, build_type)
-
+    description = data['description'].strip()
+    
+    generate_build(size, description)
+    
     return jsonify({"status": "success", "message": "Build generated successfully!"})
 
 # List previously generated builds
@@ -30,19 +29,16 @@ def list_builds():
     if os.path.exists('output'):
         for folder in os.listdir('output'):
             if os.path.isdir(os.path.join('output', folder)):
-                print(f"Found folder: {folder}")  # Debug statement
-                parts = folder.split('_', 2)  # Split into 3 parts at most
+                # Expected folder format: {safe_description}_{size}x{size}_{timestamp}
+                parts = folder.split('_', 2)
                 if len(parts) == 3:
-                    build_type, size, timestamp = parts
-                    print(f"Parsed: type={build_type}, size={size}, timestamp={timestamp}")  # Debug statement
+                    build_desc, size, timestamp = parts
                     builds.append({
                         "folder": folder,
-                        "type": build_type,
-                        "size": size.split('x')[0],  # Extract size (e.g., "10x10" -> "10")
-                        "timestamp": timestamp  # Keep the full timestamp
+                        "description": build_desc,
+                        "size": size.split('x')[0],
+                        "timestamp": timestamp
                     })
-                else:
-                    print(f"Skipping folder due to incorrect format: {folder}")  # Debug statement
     return jsonify({"builds": builds})
 
 # Load a specific build
