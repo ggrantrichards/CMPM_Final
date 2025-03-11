@@ -34,23 +34,19 @@ document
       })
       .catch((error) => {
         console.error("Error:", error);
-      })
-      .finally(() => {
-        // Hide the progress bar after completion
-        progressBarContainer.style.display = "none";
       });
 
-    // Simulate progress updates (replace this with actual progress updates from the backend)
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
+    // SSE for progress updates
+    const eventSource = new EventSource("/progress");
+    eventSource.onmessage = function (event) {
+      const progress = parseInt(event.data);
       progressBar.value = progress;
       progressPercentage.textContent = `${progress}%`;
       if (progress >= 100) {
-        clearInterval(interval);
+        eventSource.close();
       }
-    }, 500);
-});
+    };
+  });
 
 // Load the list of builds from the server
 function loadBuilds() {
@@ -132,16 +128,3 @@ document
 
 // Initial load of builds
 loadBuilds();
-
-// SSE for progress updates
-const eventSource = new EventSource("/progress");
-eventSource.onmessage = function (event) {
-  const progress = parseInt(event.data);
-  const progressBar = document.getElementById("progressBar");
-  const progressPercentage = document.getElementById("progressPercentage");
-  progressBar.value = progress;
-  progressPercentage.textContent = `${progress}%`;
-  if (progress >= 100) {
-    eventSource.close();
-  }
-};

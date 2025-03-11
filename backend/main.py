@@ -20,11 +20,19 @@ def generate():
     data = request.json
     size = int(data['size'])
     description = data['description'].strip()
-    build_type = "default_type"  # You can modify this to get the build type from the request if needed
-    
-    generate_build(size, description, build_type)
-    
-    return jsonify({"status": "success", "message": "Build generated successfully!"})
+    build_type = "default_type"
+
+    def generate_and_stream():
+        for progress in generate_build(size, description, build_type):
+            sse.publish({"progress": progress}, type='progress')
+            time.sleep(0.1)  # Simulate progress update delay
+
+    # Start the build generation in a separate thread to avoid blocking
+    from threading import Thread
+    thread = Thread(target=generate_and_stream)
+    thread.start()
+
+    return jsonify({"status": "success", "message": "Build generation started!"})
 
 # List previously generated builds
 @app.route('/list-builds', methods=['GET'])

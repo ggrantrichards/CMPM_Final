@@ -23,6 +23,7 @@ def generate_build(size, description, build_type="default_type"):
         with open(os.path.join(build_folder, f'layer_{i}.txt'), 'w') as f:
             for row in layer:
                 f.write(' '.join(row) + '\n')
+        yield int((i + 1) / len(layers) * 100)  # Yield progress
 
     # Create a schematic file using mcschematic
     schem = mcschematic.MCSchematic()
@@ -38,3 +39,4 @@ def generate_build(size, description, build_type="default_type"):
     schem.save(build_folder, f"{build_type}_{size}x{size}_{timestamp}", mcschematic.Version.JE_1_18_2)
 
     print(f"Build generated with {size}x{size} size and type {build_type}. Files saved in {build_folder}.")
+    yield 100  # Ensure progress is 100% at the end
