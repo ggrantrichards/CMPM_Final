@@ -1,15 +1,19 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file, Response, stream_with_context
-from build_generator import generate_build
+from src.build_generator import generate_build
 import os
 import time
-from threading import Thread
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # Serve the frontend.
 @app.route('/')
 def serve_frontend():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('templates', 'index.html')
+
+# Serve static files (CSS, JS)
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('src/static', filename)
 
 # Handle build generation requests.
 @app.route('/generate', methods=['POST'])
@@ -23,6 +27,8 @@ def generate():
         for progress in generate_build(size, description, build_type):
             yield f"data: {progress}\n\n"
             time.sleep(0.1)  # Simulate progress update delay
+        # Notify the frontend that the build is complete
+        yield f"data: BUILD_COMPLETE\n\n"
 
     # Return the response with stream_with_context
     return Response(stream_with_context(generate_and_stream()), mimetype='text/event-stream')
@@ -77,11 +83,17 @@ def download_schematic():
     if not os.path.exists(build_path):
         return jsonify({"error": "Build not found"}), 404
 
-    schematic_file = f"{folder}.schem"
-    schematic_path = os.path.join(build_path, schematic_file)
-    if not os.path.exists(schematic_path):
+    # Look for the .schem file in the build folder
+    schematic_file = None
+    for file in os.listdir(build_path):
+        if file.endswith('.schem'):
+            schematic_file = file
+            break
+
+    if not schematic_file:
         return jsonify({"error": "Schematic file not found"}), 404
 
+    schematic_path = os.path.join(build_path, schematic_file)
     return send_file(schematic_path, as_attachment=True)
 
 # SSE endpoint to stream progress updates

@@ -27,10 +27,8 @@ document
     })
       .then((response) => response.json())
       .then((data) => {
-        alert(
-          "Build generated successfully! Check the backend for the output files."
-        );
-        loadBuilds(); // Reload the list of builds
+        // Alert the user that the build generation has started
+        alert("Build generation started! You will be notified when it's done.");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -39,11 +37,20 @@ document
     // SSE for progress updates
     const eventSource = new EventSource("/progress");
     eventSource.onmessage = function (event) {
-      const progress = parseInt(event.data);
-      progressBar.value = progress;
-      progressPercentage.textContent = `${progress}%`;
-      if (progress >= 100) {
+      const progress = event.data.trim();
+
+      if (progress === "BUILD_COMPLETE") {
+        // Notify the user that the build is complete
+        alert("Build generation complete! The build is now available in the dropdown menu.");
         eventSource.close();
+
+        // Reload the list of builds to include the newly generated one
+        loadBuilds();
+      } else {
+        // Update the progress bar
+        const progressValue = parseInt(progress);
+        progressBar.value = progressValue;
+        progressPercentage.textContent = `${progressValue}%`;
       }
     };
   });
@@ -61,6 +68,22 @@ function loadBuilds() {
         option.textContent = `${build.description} (${build.size}x${build.size}) - ${build.timestamp}`;
         buildSelect.appendChild(option);
       });
+
+      // Automatically select the latest build if available
+      if (data.builds.length > 0) {
+        const latestBuild = data.builds[data.builds.length - 1];
+        buildSelect.value = latestBuild.folder;
+        fetch(`/load-build?folder=${latestBuild.folder}`)
+          .then((response) => response.json())
+          .then((data) => {
+            currentBuild = data.layers;
+            updateLayerSlider(currentBuild.length);
+            displayLayer(0); // Display the first layer
+          })
+          .catch((error) => {
+            console.error("Error loading build:", error);
+          });
+      }
     })
     .catch((error) => {
       console.error("Error loading builds:", error);
