@@ -15,7 +15,7 @@ def generate_build(size, description, build_type="default_type"):
     # Create a unique folder for this build.
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     safe_description = "".join(c for c in description if c.isalnum() or c in ['-', '_']).lower()
-    build_folder = f"output/{safe_description}_{size}x{size}_{timestamp}"
+    build_folder = os.path.join("..", "output", f"{safe_description}_{size}x{size}_{timestamp}")
     os.makedirs(build_folder, exist_ok=True)
     
     # Save each layer as a text file in the build folder.
