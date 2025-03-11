@@ -1,19 +1,23 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file, Response, stream_with_context
-from src.build_generator import generate_build
+from build_generator import generate_build
+import sys
 import os
 import time
 
-app = Flask(__name__, static_folder='static')
+# Initialize Flask app with the correct template folder
+app = Flask(__name__, static_folder='static', template_folder='../templates')
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Serve the frontend.
 @app.route('/')
 def serve_frontend():
-    return send_from_directory('templates', 'index.html')
+    return send_from_directory('../templates', 'index.html')
 
 # Serve static files (CSS, JS)
 @app.route('/static/<path:filename>')
 def serve_static(filename):
-    return send_from_directory('src/static', filename)
+    return send_from_directory('../static', filename)
 
 # Handle build generation requests.
 @app.route('/generate', methods=['POST'])
@@ -85,7 +89,7 @@ def download_schematic():
 
     # Look for the .schem file in the build folder
     schematic_file = None
-    for file in os.listdir(build_path):
+    for file in os.listdir(build_path)):
         if file.endswith('.schem'):
             schematic_file = file
             break

@@ -9,7 +9,7 @@ def generate_build(size, description, build_type="default_type"):
     layers = generate_build_with_gemini(size, build_type, description)
     
     # Load block abbreviations.
-    with open('../data/block_abbreviations.json', 'r') as f:
+    with open('data/block_abbreviations.json', 'r') as f:
         block_abbreviations = json.load(f)
     
     # Create a unique folder for this build.
