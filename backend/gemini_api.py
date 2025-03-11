@@ -52,14 +52,21 @@ Ensure the design is realistic and layered (i.e., not a completely solid cube).
         raw_text = response.text.strip()
         if not raw_text:
             raise ValueError("Empty response from Gemini API.")
+
+        # Try to parse the response as JSON
         try:
             response_json = json.loads(raw_text)
-        except Exception:
+        except json.JSONDecodeError:
+            # If the response is not valid JSON, try to extract JSON from Markdown
             json_match = re.search(r'```json\s*({.*?})\s*```', raw_text, re.DOTALL)
             if json_match:
                 response_json = json.loads(json_match.group(1))
             else:
+                # If no JSON is found, log the raw response for debugging
+                print("No valid JSON found in the response. Raw response:")
+                print(raw_text)
                 raise ValueError("No valid JSON found in the response.")
+
         layers = response_json.get("layers", [])
         if not layers:
             raise ValueError("JSON response does not contain 'layers' key or it is empty.")

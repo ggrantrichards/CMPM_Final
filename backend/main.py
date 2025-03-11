@@ -1,13 +1,10 @@
-from flask import Flask, request, jsonify, send_from_directory, send_file, Response
-from flask_sse import sse
+from flask import Flask, request, jsonify, send_from_directory, send_file, Response, stream_with_context
 from build_generator import generate_build
 import os
-import json
 import time
+from threading import Thread
 
 app = Flask(__name__)
-app.config["REDIS_URL"] = "redis://localhost:6379/0"
-app.register_blueprint(sse, url_prefix='/stream')
 
 # Serve the frontend.
 @app.route('/')
@@ -24,15 +21,11 @@ def generate():
 
     def generate_and_stream():
         for progress in generate_build(size, description, build_type):
-            sse.publish({"progress": progress}, type='progress')
+            yield f"data: {progress}\n\n"
             time.sleep(0.1)  # Simulate progress update delay
 
-    # Start the build generation in a separate thread to avoid blocking
-    from threading import Thread
-    thread = Thread(target=generate_and_stream)
-    thread.start()
-
-    return jsonify({"status": "success", "message": "Build generation started!"})
+    # Return the response with stream_with_context
+    return Response(stream_with_context(generate_and_stream()), mimetype='text/event-stream')
 
 # List previously generated builds
 @app.route('/list-builds', methods=['GET'])
