@@ -8,15 +8,8 @@ document
     const size = document.getElementById("size").value;
     const description = document.getElementById("description").value;
 
-    // Show the progress bar
-    const progressBarContainer = document.getElementById(
-      "progressBarContainer"
-    );
-    const progressBar = document.getElementById("progressBar");
-    const progressPercentage = document.getElementById("progressPercentage");
-    progressBarContainer.style.display = "block";
-    progressBar.value = 0;
-    progressPercentage.textContent = "0%";
+    // Notify the user that the build generation has started
+    alert("Build generation started! You will be notified when it's done.");
 
     fetch("/generate", {
       method: "POST",
@@ -25,34 +18,31 @@ document
       },
       body: JSON.stringify({ size: size, description: description }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        // Alert the user that the build generation has started
-        alert("Build generation started! You will be notified when it's done.");
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response;
+      })
+      .then(() => {
+        // SSE for build completion notification
+        const eventSource = new EventSource("/progress");
+        eventSource.onmessage = function (event) {
+          const progress = event.data.trim();
+
+          if (progress === "BUILD_COMPLETE") {
+            // Notify the user that the build is complete
+            alert("Build generation complete! The build is now available in the dropdown menu.");
+            eventSource.close(); // Close the EventSource connection
+
+            // Reload the list of builds to include the newly generated one
+            loadBuilds();
+          }
+        };
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-
-    // SSE for progress updates
-    const eventSource = new EventSource("/progress");
-    eventSource.onmessage = function (event) {
-      const progress = event.data.trim();
-
-      if (progress === "BUILD_COMPLETE") {
-        // Notify the user that the build is complete
-        alert("Build generation complete! The build is now available in the dropdown menu.");
-        eventSource.close(); // Close the EventSource connection
-
-        // Reload the list of builds to include the newly generated one
-        loadBuilds();
-      } else {
-        // Update the progress bar
-        const progressValue = parseInt(progress);
-        progressBar.value = progressValue;
-        progressPercentage.textContent = `${progressValue}%`;
-      }
-    };
   });
 
 // Load the list of builds from the server
