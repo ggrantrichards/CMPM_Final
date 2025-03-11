@@ -41,9 +41,10 @@ def generate():
 @app.route('/list-builds', methods=['GET'])
 def list_builds():
     builds = []
-    if os.path.exists('output'):
-        for folder in os.listdir('output'):
-            if os.path.isdir(os.path.join('output', folder)):
+    output_path = os.path.join(os.path.dirname(__file__), '..', 'output')
+    if os.path.exists(output_path):
+        for folder in os.listdir(output_path):
+            if os.path.isdir(os.path.join(output_path, folder)):
                 # Expected folder format: {safe_description}_{size}x{size}_{timestamp}
                 parts = folder.split('_', 2)
                 if len(parts) == 3:
@@ -63,7 +64,7 @@ def load_build():
     if not folder:
         return jsonify({"error": "Folder not specified"}), 400
 
-    build_path = os.path.join('output', folder)
+    build_path = os.path.join(os.path.dirname(__file__), '..', 'output', folder)
     if not os.path.exists(build_path):
         return jsonify({"error": "Build not found"}), 404
 
@@ -83,7 +84,7 @@ def download_schematic():
     if not folder:
         return jsonify({"error": "Folder not specified"}), 400
 
-    build_path = os.path.join('output', folder)
+    build_path = os.path.join(os.path.dirname(__file__), '..', 'output', folder)
     if not os.path.exists(build_path):
         return jsonify({"error": "Build not found"}), 404
 
@@ -111,6 +112,7 @@ def progress():
     return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
-    if not os.path.exists('output'):
-        os.makedirs('output')
+    output_path = os.path.join(os.path.dirname(__file__), '..', 'output')
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     app.run(debug=True)
