@@ -4,9 +4,9 @@ from gemini_api import generate_build_with_gemini
 from datetime import datetime
 import mcschematic
 
-def generate_build(size, description):
+def generate_build(size, description, build_type="default_type"):
     # Generate layers using the Gemini API.
-    layers = generate_build_with_gemini(size, description)
+    layers = generate_build_with_gemini(size, build_type, description)
     
     # Load block abbreviations.
     with open('data/block_abbreviations.json', 'r') as f:

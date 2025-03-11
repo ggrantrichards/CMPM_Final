@@ -6,7 +6,7 @@ document
   .addEventListener("submit", function (event) {
     event.preventDefault();
     const size = document.getElementById("size").value;
-    const type = document.getElementById("type").value;
+    const description = document.getElementById("description").value;
 
     // Show the progress bar
     const progressBarContainer = document.getElementById(
@@ -23,7 +23,7 @@ document
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ size: size, type: type }),
+      body: JSON.stringify({ size: size, description: description }),
     })
       .then((response) => response.json())
       .then((data) => {

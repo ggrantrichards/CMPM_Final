@@ -8,10 +8,10 @@ genai.configure(api_key="AIzaSyD35idMpAjsv_t_uoq5jx-7UWEdmDxsB2E")
 # Initialize the model.
 model = genai.GenerativeModel('gemini-2.0-flash')
 
-def generate_build_with_gemini(size, description):
+def generate_build_with_gemini(size, build_type, description):
     try:
         prompt = f"""
-        Generate a Minecraft {build_type} build with a size of {size}x{size}. 
+        Generate a Minecraft {build_type} build with a size of {size}x{size}.
         The build must meet the following requirements:
         1. **Floor**: The bottom layer (layer 0) must be a solid floor made of appropriate blocks (e.g., STONE, OAK_PLANKS, etc.).
         2. **Roof**: The top layer (last layer) must be a solid roof made of appropriate blocks (e.g., OAK_PLANKS, STONE_BRICKS, etc.).

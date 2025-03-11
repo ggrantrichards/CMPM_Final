@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file, Response
+from flask_sse import sse
 from build_generator import generate_build
 import os
 import json
 import time
 
 app = Flask(__name__)
+app.config["REDIS_URL"] = "redis://localhost:6379/0"
+app.register_blueprint(sse, url_prefix='/stream')
 
 # Serve the frontend.
 @app.route('/')
@@ -17,8 +20,9 @@ def generate():
     data = request.json
     size = int(data['size'])
     description = data['description'].strip()
+    build_type = "default_type"  # You can modify this to get the build type from the request if needed
     
-    generate_build(size, description)
+    generate_build(size, description, build_type)
     
     return jsonify({"status": "success", "message": "Build generated successfully!"})
 
