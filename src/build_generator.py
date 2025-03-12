@@ -3,10 +3,15 @@ import os
 from gemini_api import generate_build_with_gemini
 from datetime import datetime
 import mcschematic
+from genetic_algorithm import GeneticAlgorithm
 
 def generate_build(size, description, build_type="default_type"):
     # Generate layers using the Gemini API.
     layers = generate_build_with_gemini(size, build_type, description)
+    
+    # Run the genetic algorithm to improve the build
+    ga = GeneticAlgorithm(layers)
+    improved_layers = ga.evolve(generations=10)
     
     # Load block abbreviations.
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'block_abbreviations.json')
