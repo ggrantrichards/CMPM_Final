@@ -28,7 +28,7 @@ def generate():
     data = request.json
     size = int(data['size'])
     description = data['description'].strip()
-    build_type = "default_type"
+    build_type = description.lower().replace(" ", "_")
 
     def generate_and_stream():
         global build_status
