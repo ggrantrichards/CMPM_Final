@@ -8,6 +8,8 @@ Minecraft AI Builder using Gemini
     - Holds helper functions in script.js and css styling for frontend
 /templates
     - Holds index.html
+/output
+    - Holds output of program generation in layer text format and .schem file
 
 install requirements with:
 pip install -r requirements.txt
