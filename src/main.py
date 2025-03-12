@@ -28,9 +28,8 @@ def generate():
     build_type = "default_type"
 
     def generate_and_stream():
-        for progress in generate_build(size, description, build_type):
-            yield f"data: {progress}\n\n"
-            time.sleep(0.1)  # Simulate progress update delay
+        for _ in generate_build(size, description, build_type):
+            pass
         # Notify the frontend that the build is complete
         yield f"data: BUILD_COMPLETE\n\n"
 

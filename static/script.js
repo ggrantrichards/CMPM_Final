@@ -32,11 +32,8 @@ document
 
           if (progress === "BUILD_COMPLETE") {
             // Notify the user that the build is complete
-            alert("Build generation complete! The build is now available in the dropdown menu.");
+            alert("Build generation complete! Please refresh the page to see the new build.");
             eventSource.close(); // Close the EventSource connection
-
-            // Reload the list of builds to include the newly generated one
-            loadBuilds();
           }
         };
       })
