@@ -9,6 +9,9 @@ app = Flask(__name__, static_folder='../static', template_folder='../templates')
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Store the build status
+build_status = {"status": "IDLE"}
+
 # Serve the frontend.
 @app.route('/')
 def serve_frontend():
@@ -28,13 +31,26 @@ def generate():
     build_type = "default_type"
 
     def generate_and_stream():
+        global build_status
+        build_status["status"] = "IN_PROGRESS"
         for _ in generate_build(size, description, build_type):
             pass
         # Notify the frontend that the build is complete
+        build_status["status"] = "COMPLETE"
         yield f"data: BUILD_COMPLETE\n\n"
 
     # Return the response with stream_with_context
     return Response(stream_with_context(generate_and_stream()), mimetype='text/event-stream')
+
+# SSE endpoint to stream build status updates
+@app.route('/build-status')
+def build_status_stream():
+    def generate():
+        while True:
+            yield f"data: {build_status['status']}\n\n"
+            time.sleep(1)
+
+    return Response(generate(), mimetype='text/event-stream')
 
 # List previously generated builds
 @app.route('/list-builds', methods=['GET'])
@@ -99,16 +115,6 @@ def download_schematic():
 
     schematic_path = os.path.join(build_path, schematic_file)
     return send_file(schematic_path, as_attachment=True)
-
-# SSE endpoint to stream progress updates
-@app.route('/progress')
-def progress():
-    def generate():
-        for i in range(101):
-            yield f"data: {i}\n\n"
-            time.sleep(0.1)  # Simulate progress update delay
-
-    return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
     output_path = os.path.join(os.path.dirname(__file__), '..', 'output')

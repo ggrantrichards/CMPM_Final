@@ -26,11 +26,11 @@ document
       })
       .then(() => {
         // SSE for build completion notification
-        const eventSource = new EventSource("/progress");
+        const eventSource = new EventSource("/build-status");
         eventSource.onmessage = function (event) {
-          const progress = event.data.trim();
+          const status = event.data.trim();
 
-          if (progress === "BUILD_COMPLETE") {
+          if (status === "COMPLETE") {
             // Notify the user that the build is complete
             alert("Build generation complete! Please refresh the page to see the new build.");
             eventSource.close(); // Close the EventSource connection
