@@ -5,17 +5,25 @@ import os
 import time
 
 # Initialize Flask app with the correct static and template folders
-app = Flask(__name__, static_folder='../static', template_folder='../templates')
+dist_dir = os.path.join(os.path.dirname(__file__), '../../frontend/Client/dist')
+app = Flask(
+    __name__, 
+    static_folder=dist_dir,
+    template_folder=dist_dir
+)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Store the build status
 build_status = {"status": "IDLE"}
 
-# Serve the frontend.
-@app.route('/')
-def serve_frontend():
-    return send_from_directory(app.template_folder, 'index.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react_app(path):
+    if path != "" and os.path.exists(os.path.join(dist_dir, path)):
+        return send_from_directory(dist_dir, path)
+    else:
+        return send_from_directory(dist_dir, 'index.html')
 
 # Serve static files (CSS, JS)
 @app.route('/static/<path:filename>')
@@ -120,4 +128,4 @@ if __name__ == '__main__':
     output_path = os.path.join(os.path.dirname(__file__), '..', 'output')
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
