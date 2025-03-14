@@ -13,47 +13,26 @@ def generate_build_with_gemini(size, build_type, description):
         prompt = f"""
         Generate a Minecraft {build_type} build with a size of {size}x{size}. 
         The build must meet the following requirements:
-        1. **Dynamic Shape**: The overall shape should be non-cubic and dynamic, staying true to the given theme,
+        1. **Dynamic Shape**: The overall shape should be cubic, staying true to the given theme,
         but maintain a house-like appearance.
 
         2. **Four-Wall Design**: Each of the four walls must be clearly defined.
-        Walls should be similar in style to maintain thematic consistency but should not necessarily be perfectly symmetrical.  
-        Air blocks (AA) must only be used intentionally to alter a wall's shape
-        (e.g., for design features or to create an entrance) and must not appear randomly.
+        Walls should be similar in style to maintain thematic consistency but should not necessarily be perfectly symmetrical. 
 
         3. **Floor**: The bottom layer (layer 0) must form a continuous,
         solid floor using appropriate blocks with no gaps.
 
-        4. **Roofline and Roof**: The roof must have a defined roofline that fits the theme,
-        which may include dynamic elements (such as a sloped or tapered design).
-        The top layer (or layers forming the roof) should be solid and gap-free, using appropriate blocks.
+        4. **Roofline and Roof**: The top layer (roof) must be a continuous, solid layer using appropriate blocks with no gaps.
 
         5. **Traversable Interior**: The interior of the build should be mostly hollow (air blocks),
         ensuring one space for a 1x1x2 player to move freely.
         There must be no random or floating blocks inside;
-        any air blocks within are only there to form the intended dynamic shape. 
-        It should sparsely use decorative blocks selected from the interior section to add to the aesthetic. 
-        Interior blocks:
 
-        "CT": "minecraft:crafting_table",
-        "FN": "minecraft:furnace",
-        "BF": "minecraft:blast_furnace",
-        "SM": "minecraft:smoker",
-        "CBF": "minecraft:cartography_table",
-        "LBF": "minecraft:loom",
-        "SFB": "minecraft:smithing_table",
-        "STB": "minecraft:stonecutter",
-        "BFB": "minecraft:barrel"
-
-        6. **Entrance**: There must be exactly one open entrance, sized 1x1x2,
-        located in the center of one of the walls.
-        This is the only intentional gap in that wall, ensuring a clear and defined entry point.
-
-        7. **Thematic Consistency**: All design choices
+        6. **Thematic Consistency**: All design choices
         (including block selection and architectural details)
         should strongly reflect the chosen {build_type} theme.
 
-        8. **Block Restrictions**: 
+        7. **Block Restrictions**: 
         - Only use the following block abbreviations (each block occupies a 1x1x1 space) for exterior:
         "AA": "minecraft:air",
         "ST": "minecraft:stone",
@@ -107,11 +86,6 @@ def generate_build_with_gemini(size, build_type, description):
         "NT": "minecraft:nether_bricks",
         "EB": "minecraft:end_stone_bricks",
         "GL": "minecraft:glass"
-
-        9. **Validation and Regeneration**: If any aspect of the build fails to meet the above criteria
-        (e.g., missing floor, random air blocks, incorrect wall design, improper entrance placement/size,
-        lack of dynamic shape, or thematic inconsistency),
-        then consider the output invalid and regenerate the design until all conditions are satisfied.
 
         Format the output as a JSON object with a key "layers" containing a list of layers,
         where each layer is a list of rows, and each row is a list of block abbreviations.

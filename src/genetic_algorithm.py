@@ -9,7 +9,7 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, population_size=10, mutation_rate=0.1):
+    def __init__(self, initial_build, population_size=100, mutation_rate=0.05):  # Lowered mutation rate to 5%
         self.initial_build = initial_build
         self.population_size = population_size
         self.mutation_rate = mutation_rate
@@ -26,19 +26,34 @@ class GeneticAlgorithm:
     def mutate_build(self, build):
         # Apply random mutations to the build
         mutated_build = []
-        for layer in build:
+        for layer_idx, layer in enumerate(build):
             mutated_layer = []
-            for row in layer:
+            for row_idx, row in enumerate(layer):
                 mutated_row = []
-                for block in row:
+                for block_idx, block in enumerate(row):
                     if random.random() < self.mutation_rate:
                         # Mutate the block (e.g., change it to a random block)
-                        mutated_row.append(self.get_random_block())
+                        # Prioritize mutating interior blocks (not walls or roof)
+                        if self.is_interior_block(layer_idx, row_idx, block_idx, build):
+                            mutated_row.append(self.get_random_block())
+                        else:
+                            mutated_row.append(block)  # Preserve walls and roof
                     else:
                         mutated_row.append(block)
                 mutated_layer.append(mutated_row)
             mutated_build.append(mutated_layer)
         return mutated_build
+
+    def is_interior_block(self, layer_idx, row_idx, block_idx, build):
+        # Check if the block is part of the interior (not walls or roof)
+        # Assuming the first and last layers are floor and roof, and the outer rows/columns are walls
+        if layer_idx == 0 or layer_idx == len(build) - 1:
+            return False  # Floor and roof layers are not interior
+        if row_idx == 0 or row_idx == len(build[layer_idx]) - 1:
+            return False  # Outer rows are walls
+        if block_idx == 0 or block_idx == len(build[layer_idx][row_idx]) - 1:
+            return False  # Outer columns are walls
+        return True  # Interior block
 
     def get_random_block(self):
         # Return a random block from the block abbreviations
@@ -56,7 +71,7 @@ class GeneticAlgorithm:
         return child
 
     def evolve(self, generations=10):
-        for _ in range(generations):
+        for generation in range(generations):
             new_population = []
             for _ in range(self.population_size):
                 parent1 = self.select_parent()
@@ -65,6 +80,20 @@ class GeneticAlgorithm:
                 child = self.mutate_build(child)
                 new_population.append(child)
             self.population = new_population
+
+            # Log fitness scores
+            fitness_scores = [evaluate_fitness(build) for build in self.population]
+            average_fitness = sum(fitness_scores) / len(fitness_scores)
+            best_fitness = max(fitness_scores)
+            print(f"Generation {generation + 1}: Average Fitness = {average_fitness}, Best Fitness = {best_fitness}")
+
+            # Debugging: Print the best build of the generation
+            best_build = self.get_best_build()
+            print(f"Best Build of Generation {generation + 1}:")
+            for layer in best_build:
+                for row in layer:
+                    print(' '.join(row))
+                print()
 
         # Return the best build after evolution
         return self.get_best_build()

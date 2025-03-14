@@ -11,8 +11,51 @@ def four_wall_validation(build):
     # Return a score based on how many walls the build seems to have 
     # Make sure not too many large gaps
     score = 0
-    # Implement the logic here
+
+    if not build:
+        return score
+
+    size = len(build[0])
+    walls = {"north": [], "south": [], "east": [], "west": []}
+
+    # Extract the walls from all layers
+    for layer in build:
+        north_wall = [row[0] for row in layer]  # First column
+        south_wall = [row[-1] for row in layer]  # Last column
+        east_wall = layer[0]  # First row
+        west_wall = layer[-1]  # Last row
+
+        walls["north"].append(north_wall)
+        walls["south"].append(south_wall)
+        walls["east"].append(east_wall)
+        walls["west"].append(west_wall)
+
+    # Compare each wall to the others and calculate similarity
+    wall_keys = list(walls.keys())
+    for i in range(len(wall_keys)):
+        for j in range(i + 1, len(wall_keys)):
+            similarity = calculate_similarity(walls[wall_keys[i]], walls[wall_keys[j]])
+            if similarity >= 0.9:  # 90% similarity
+                score += 25  # Add to the score if walls are similar
+            else:
+                score -= 25  # Penalize if walls are not similar
+
     return score
+
+def calculate_similarity(wall1, wall2):
+    # Calculate the similarity between two walls based on block composition
+    if len(wall1) != len(wall2):
+        return 0  # Walls must be the same length
+
+    similar_blocks = 0
+    total_blocks = 0
+    for layer1, layer2 in zip(wall1, wall2):
+        for block1, block2 in zip(layer1, layer2):
+            total_blocks += 1
+            if block1 == block2:
+                similar_blocks += 1
+
+    return similar_blocks / total_blocks
 
 def roofline_validation(build):
     # Check if the build has a defined roofline
@@ -37,7 +80,7 @@ def interior_validation(build):
     # Remaining interior layers: 95% air blocks, 5% other blocks
     fitness = 0
     useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
-    interior_layers = build[1:-1]
+    interior_layers = build[1:-1]  # Skip the first layer (floor) and the last layer (roof)
 
     if not interior_layers:
         return -100  # Penalize heavily for invalid builds
@@ -67,6 +110,7 @@ def interior_validation(build):
         fitness -= air_deviation_layer  # Subtract deviation from fitness
 
     return fitness
+
 
 # entrance validation should be done before GA
 # def entrance_validation(build):
