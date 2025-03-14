@@ -28,17 +28,17 @@ def generate_build(size, description, build_type="default_type"):
     os.makedirs(build_folder, exist_ok=True)
     
     # Save each layer as a text file in the build folder.
-    for i, layer in enumerate(layers):
+    for i, layer in enumerate(improved_layers):
         with open(os.path.join(build_folder, f'layer_{i}.txt'), 'w') as f:
             for row in layer:
                 f.write(' '.join(row) + '\n')
-        yield int((i + 1) / len(layers) * 100)  # Yield progress
+        yield int((i + 1) / len(improved_layers) * 100)  # Yield progress
 
     # Create a schematic file using mcschematic
     schem = mcschematic.MCSchematic()
 
     # Convert the layers into blocks in the schematic
-    for z, layer in enumerate(layers):
+    for z, layer in enumerate(improved_layers):
         for y, row in enumerate(layer):
             for x, block_abbr in enumerate(row):
                 block_name = block_abbreviations.get(block_abbr, "minecraft:air")  # Default to air if abbreviation is not found

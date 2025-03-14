@@ -28,7 +28,7 @@ def generate_build_with_gemini(size, build_type, description):
         which may include dynamic elements (such as a sloped or tapered design).
         The top layer (or layers forming the roof) should be solid and gap-free, using appropriate blocks.
 
-        5. **Traversable Interior**: The interior of the build should be mostly hollow,
+        5. **Traversable Interior**: The interior of the build should be mostly hollow (air blocks),
         ensuring one space for a 1x1x2 player to move freely.
         There must be no random or floating blocks inside;
         any air blocks within are only there to form the intended dynamic shape. 

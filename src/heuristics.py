@@ -1,9 +1,9 @@
 def evaluate_fitness(build):
     fitness = 0
-    fitness += four_wall_validation(build)
-    fitness += roofline_validation(build)
-    fitness += thematic_consistency(build)
-    fitness += interior_validation(build)
+    fitness += four_wall_validation(build) * 0.2  # 20% weight
+    fitness += roofline_validation(build) * 0.2    # 20% weight
+    fitness += thematic_consistency(build) * 0.2   # 20% weight
+    fitness += interior_validation(build) * 0.4    # 40% weight
     return fitness
 
 def four_wall_validation(build):
@@ -35,66 +35,38 @@ def interior_validation(build):
     # Return a score based on the interior quality 
     # First interior layer: 80% air blocks, 20% useful blocks
     # Remaining interior layers: 95% air blocks, 5% other blocks
-    score = 0
-
-    # List of useful blocks
+    fitness = 0
     useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
-
-    # Skip the first layer (floor) and the last layer (roof)
     interior_layers = build[1:-1]
 
-    # Check if there are any interior layers
     if not interior_layers:
-        # If there are no interior layers, penalize the score
         return -100  # Penalize heavily for invalid builds
 
-    # Check the first interior layer (layer 1, after the floor)
+    # First interior layer
     first_interior_layer = interior_layers[0]
-
-    # Count the total number of blocks in the first interior layer
     total_blocks_first_layer = len(first_interior_layer) * len(first_interior_layer[0])
+    air_blocks_first_layer = sum(row.count("AA") for row in first_interior_layer)
+    useful_blocks_first_layer = sum(row.count(block) for row in first_interior_layer for block in useful_blocks)
 
-    # Count the number of air blocks and useful blocks in the first interior layer
-    air_blocks_first_layer = 0
-    useful_blocks_first_layer = 0
-
-    for row in first_interior_layer:
-        for block in row:
-            if block == "AA":  # Air block
-                air_blocks_first_layer += 1
-            elif block in useful_blocks:  # Useful block
-                useful_blocks_first_layer += 1
-
-    # Calculate the percentage of air and useful blocks in the first interior layer
     air_percentage_first_layer = (air_blocks_first_layer / total_blocks_first_layer) * 100
     useful_percentage_first_layer = (useful_blocks_first_layer / total_blocks_first_layer) * 100
 
-    # Check if the first interior layer meets the requirements
-    if air_percentage_first_layer >= 80 and useful_percentage_first_layer <= 20:
-        score += 50  # Add to the score if the first interior layer meets the requirements
+    # Calculate deviation from 80% air and 20% useful blocks
+    air_deviation_first_layer = abs(air_percentage_first_layer - 80)
+    useful_deviation_first_layer = abs(useful_percentage_first_layer - 20)
+    fitness -= (air_deviation_first_layer + useful_deviation_first_layer)  # Subtract deviation from fitness
 
-    # Check the remaining interior layers (layers 2 and above)
+    # Remaining interior layers
     for layer in interior_layers[1:]:
-        # Count the total number of blocks in the current layer
         total_blocks_layer = len(layer) * len(layer[0])
-
-        # Count the number of air blocks in the current layer
-        air_blocks_layer = 0
-        for row in layer:
-            for block in row:
-                if block == "AA":  # Air block
-                    air_blocks_layer += 1
-
-        # Calculate the percentage of air blocks in the current layer
+        air_blocks_layer = sum(row.count("AA") for row in layer)
         air_percentage_layer = (air_blocks_layer / total_blocks_layer) * 100
 
-        # Check if the current layer meets the 95% air block requirement
-        if air_percentage_layer >= 95:
-            score += 10  # Add to the score if the layer meets the requirement
-        else:
-            score -= 10  # Penalize the score if the layer does not meet the requirement
+        # Calculate deviation from 95% air blocks
+        air_deviation_layer = abs(air_percentage_layer - 95)
+        fitness -= air_deviation_layer  # Subtract deviation from fitness
 
-    return score
+    return fitness
 
 # entrance validation should be done before GA
 # def entrance_validation(build):
