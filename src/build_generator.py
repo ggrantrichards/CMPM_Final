@@ -14,7 +14,7 @@ def generate_build(size, description, build_type="default_type"):
 
     # Run the genetic algorithm to improve the build
     ga = GeneticAlgorithm(layers)
-    improved_layers = ga.evolve(generations=10)
+    improved_layers = ga.evolve(generations=25)
     
     # Load block abbreviations.
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'block_abbreviations.json')
