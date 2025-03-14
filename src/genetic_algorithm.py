@@ -9,7 +9,7 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, build_type, population_size=100, mutation_rate=0.01):
+    def __init__(self, initial_build, build_type, population_size=100, mutation_rate=0.05):
         self.initial_build = initial_build
         self.build_type = build_type
         self.population_size = population_size
@@ -44,17 +44,17 @@ class GeneticAlgorithm:
                 mutated_row = []
                 for block_idx, block in enumerate(row):
                     if random.random() < self.mutation_rate:
-                        # Mutate the block (e.g., change it to a random block from the allowed blocks)
-                        # Prioritize mutating interior blocks (not walls or roof)
-                        if self.is_interior_block(layer_idx, row_idx, block_idx, build):
-                            mutated_row.append(self.get_random_allowed_block())
+                        # Only mutate the first interior layer and only allow useful blocks
+                        if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
+                            mutated_row.append(self.get_random_useful_block())
                         else:
-                            mutated_row.append(block)  # Preserve walls and roof
+                            mutated_row.append(block)  # Preserve walls, roof, and other layers
                     else:
                         mutated_row.append(block)
                 mutated_layer.append(mutated_row)
             mutated_build.append(mutated_layer)
         return mutated_build
+
 
     def is_interior_block(self, layer_idx, row_idx, block_idx, build):
         # Check if the block is part of the interior (not walls or roof)
@@ -118,3 +118,12 @@ class GeneticAlgorithm:
         fitness_scores = [evaluate_fitness(build) for build in self.population]
         best_index = fitness_scores.index(max(fitness_scores))
         return self.population[best_index]
+    
+    def is_first_interior_layer(self, layer_idx, build):
+        # Check if the layer is the first interior layer (layer 1)
+        return layer_idx == 1  # First interior layer is layer 1 (layer 0 is the floor)
+
+    def get_random_useful_block(self):
+        # Return a random useful block from the allowed blocks
+        useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
+        return random.choice(list(useful_blocks))

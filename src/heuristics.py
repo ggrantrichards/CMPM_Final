@@ -136,7 +136,8 @@ def interior_validation(build):
     useful_deviation_first_layer = abs(useful_percentage_first_layer - 20)
     fitness -= (air_deviation_first_layer + useful_deviation_first_layer)  # Subtract deviation from fitness
 
-    # Remaining interior layers
+    # Remaining interior layers (no mutations allowed, so no validation needed)
+    # We can optionally enforce 95% air blocks, but mutations are not allowed here
     for layer in interior_layers[1:]:
         total_blocks_layer = len(layer) * len(layer[0])
         air_blocks_layer = sum(row.count("AA") for row in layer)
@@ -147,6 +148,7 @@ def interior_validation(build):
         fitness -= air_deviation_layer  # Subtract deviation from fitness
 
     return fitness
+
 
 
 # entrance validation should be done before GA
