@@ -25,7 +25,7 @@ def generate_build_with_gemini(size, build_type, description):
         4. **Roofline and Roof**: The top layer (roof) must be a continuous, solid layer using appropriate blocks with no gaps.
 
         5. **Traversable Interior**: The interior of the build should be mostly hollow (air blocks),
-        ensuring one space for a 1x1x2 player to move freely.
+        ensuring space for a 1x1x2 player to move freely.
         There must be no random or floating blocks inside;
 
         6. **Thematic Consistency**: All design choices

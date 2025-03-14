@@ -9,7 +9,7 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, population_size=100, mutation_rate=0.05):  # Lowered mutation rate to 5%
+    def __init__(self, initial_build, population_size=100, mutation_rate=0.01):  # Lowered mutation rate to 5%
         self.initial_build = initial_build
         self.population_size = population_size
         self.mutation_rate = mutation_rate
@@ -87,13 +87,13 @@ class GeneticAlgorithm:
             best_fitness = max(fitness_scores)
             print(f"Generation {generation + 1}: Average Fitness = {average_fitness}, Best Fitness = {best_fitness}")
 
-            # Debugging: Print the best build of the generation
-            best_build = self.get_best_build()
-            print(f"Best Build of Generation {generation + 1}:")
-            for layer in best_build:
-                for row in layer:
-                    print(' '.join(row))
-                print()
+            # # Debugging: Print the best build of the generation
+            # best_build = self.get_best_build()
+            # print(f"Best Build of Generation {generation + 1}:")
+            # for layer in best_build:
+            #     for row in layer:
+            #         print(' '.join(row))
+            #     print()
 
         # Return the best build after evolution
         return self.get_best_build()
