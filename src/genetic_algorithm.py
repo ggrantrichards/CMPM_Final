@@ -16,6 +16,7 @@ class GeneticAlgorithm:
         self.mutation_rate = mutation_rate
         self.allowed_blocks = self.get_allowed_blocks(build_type)
         self.population = self.initialize_population()
+        self.first_interior_layer_meets_ratio = False  # Flag to track if the first interior layer meets the ratio
 
     def get_allowed_blocks(self, build_type):
         # Define the mapping of keywords to allowed blocks
@@ -44,9 +45,12 @@ class GeneticAlgorithm:
                 mutated_row = []
                 for block_idx, block in enumerate(row):
                     if random.random() < self.mutation_rate:
-                        # Only mutate the first interior layer and only allow useful blocks
+                        # Only mutate the first interior layer if it hasn't met the ratio
                         if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
-                            mutated_row.append(self.get_random_useful_block())
+                            if not self.first_interior_layer_meets_ratio:
+                                mutated_row.append(self.get_random_useful_block())
+                            else:
+                                mutated_row.append(block)  # Skip mutation if the ratio is met
                         else:
                             mutated_row.append(block)  # Preserve walls, roof, and other layers
                     else:
@@ -54,7 +58,6 @@ class GeneticAlgorithm:
                 mutated_layer.append(mutated_row)
             mutated_build.append(mutated_layer)
         return mutated_build
-
 
     def is_interior_block(self, layer_idx, row_idx, block_idx, build):
         # Check if the block is part of the interior (not walls or roof)
@@ -98,6 +101,10 @@ class GeneticAlgorithm:
             best_fitness = max(fitness_scores)
             print(f"Generation {generation + 1}: Average Fitness = {average_fitness}, Best Fitness = {best_fitness}")
 
+            # Check if the first interior layer meets the desired ratio
+            if not self.first_interior_layer_meets_ratio:
+                self.first_interior_layer_meets_ratio = self.check_first_interior_layer_ratio()
+
         # Return the best build after evolution
         return self.get_best_build()
 
@@ -118,7 +125,7 @@ class GeneticAlgorithm:
         fitness_scores = [evaluate_fitness(build) for build in self.population]
         best_index = fitness_scores.index(max(fitness_scores))
         return self.population[best_index]
-    
+
     def is_first_interior_layer(self, layer_idx, build):
         # Check if the layer is the first interior layer (layer 1)
         return layer_idx == 1  # First interior layer is layer 1 (layer 0 is the floor)
@@ -127,3 +134,19 @@ class GeneticAlgorithm:
         # Return a random useful block from the allowed blocks
         useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
         return random.choice(list(useful_blocks))
+
+    def check_first_interior_layer_ratio(self):
+        # Check if the first interior layer meets the desired ratio (80% air, 20% useful blocks) with 5% leeway
+        for build in self.population:
+            first_interior_layer = build[1]  # First interior layer is layer 1
+            total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
+            air_blocks = sum(row.count("AA") for row in first_interior_layer)
+            useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
+
+            air_percentage = (air_blocks / total_blocks) * 100
+            useful_percentage = (useful_blocks / total_blocks) * 100
+
+            # Check if the ratio is within 5% leeway
+            if 75 <= air_percentage <= 85 and 15 <= useful_percentage <= 25:
+                return True  # Ratio is met
+        return False  # Ratio is not met
