@@ -12,33 +12,33 @@ def four_wall_validation(build):
     # Make sure not too many large gaps
     score = 0
 
-    if not build:
-        return score
+    # if not build:
+    #     return score
 
-    size = len(build[0])
-    walls = {"north": [], "south": [], "east": [], "west": []}
+    # size = len(build[0])
+    # walls = {"north": [], "south": [], "east": [], "west": []}
 
-    # Extract the walls from all layers
-    for layer in build:
-        north_wall = [row[0] for row in layer]  # First column
-        south_wall = [row[-1] for row in layer]  # Last column
-        east_wall = layer[0]  # First row
-        west_wall = layer[-1]  # Last row
+    # # Extract the walls from all layers
+    # for layer in build:
+    #     north_wall = [row[0] for row in layer]  # First column
+    #     south_wall = [row[-1] for row in layer]  # Last column
+    #     east_wall = layer[0]  # First row
+    #     west_wall = layer[-1]  # Last row
 
-        walls["north"].append(north_wall)
-        walls["south"].append(south_wall)
-        walls["east"].append(east_wall)
-        walls["west"].append(west_wall)
+    #     walls["north"].append(north_wall)
+    #     walls["south"].append(south_wall)
+    #     walls["east"].append(east_wall)
+    #     walls["west"].append(west_wall)
 
-    # Compare each wall to the others and calculate similarity
-    wall_keys = list(walls.keys())
-    for i in range(len(wall_keys)):
-        for j in range(i + 1, len(wall_keys)):
-            similarity = calculate_similarity(walls[wall_keys[i]], walls[wall_keys[j]])
-            if similarity >= 0.9:  # 90% similarity
-                score += 25  # Add to the score if walls are similar
-            else:
-                score -= 25  # Penalize if walls are not similar
+    # # Compare each wall to the others and calculate similarity
+    # wall_keys = list(walls.keys())
+    # for i in range(len(wall_keys)):
+    #     for j in range(i + 1, len(wall_keys)):
+    #         similarity = calculate_similarity(walls[wall_keys[i]], walls[wall_keys[j]])
+    #         if similarity >= 0.9:  # 90% similarity
+    #             score += 25  # Add to the score if walls are similar
+    #         else:
+    #             score -= 25  # Penalize if walls are not similar
 
     return score
 
@@ -66,12 +66,49 @@ def roofline_validation(build):
     return score
 
 def thematic_consistency(build):
-    # Check if the build is thematically consistent
-    # Return a score based on thematic consistency 
-    # Use the appropriate blocks with the correct indication of key words in the build description
+    # Define the mapping of keywords to allowed and disallowed blocks
+    thematic_keywords = {
+        "house": {
+            "allowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "OL", "SL", "BL", "DL", "OS", "SS", "BS", "JS", "AS", "DOS"},
+            "disallowed": {"NT", "OB", "BB", "PBS", "PBSB"}
+        },
+        "castle": {
+            "allowed": {"ST", "CB", "SB", "BR", "NT", "EB"},
+            "disallowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP"}
+        },
+        "nether": {
+            "allowed": {"NT", "BB", "PBS", "PBSB", "CLG", "CS"},
+            "disallowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP"}
+        },
+        "modern": {
+            "allowed": {"GL", "ST", "PDI", "PAN", "PDS", "PBS"},
+            "disallowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "NT"}
+        }
+    }
+
+    # Determine the build type from the description
+    build_type = "house"  # Default to house if no keyword matches
+    for keyword in thematic_keywords:
+        if keyword in build_type:
+            build_type = keyword
+            break
+
+    allowed_blocks = thematic_keywords[build_type]["allowed"]
+    disallowed_blocks = thematic_keywords[build_type]["disallowed"]
+
+    # Calculate the thematic consistency score
     score = 0
-    # Implement the logic here
-    return score
+    total_blocks = 0
+    for layer in build:
+        for row in layer:
+            for block in row:
+                total_blocks += 1
+                if block in allowed_blocks:
+                    score += 1
+                elif block in disallowed_blocks:
+                    score -= 1
+
+    return score / total_blocks  # Normalize the score
 
 def interior_validation(build):
     # Check if the interior is mostly hollow

@@ -9,11 +9,23 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, population_size=100, mutation_rate=0.01):
+    def __init__(self, initial_build, build_type, population_size=100, mutation_rate=0.01):
         self.initial_build = initial_build
+        self.build_type = build_type
         self.population_size = population_size
         self.mutation_rate = mutation_rate
+        self.allowed_blocks = self.get_allowed_blocks(build_type)
         self.population = self.initialize_population()
+
+    def get_allowed_blocks(self, build_type):
+        # Define the mapping of keywords to allowed blocks
+        thematic_keywords = {
+            "house": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "OL", "SL", "BL", "DL", "OS", "SS", "BS", "JS", "AS", "DOS"},
+            "castle": {"ST", "CB", "SB", "BR", "NT", "EB"},
+            "nether": {"NT", "BB", "PBS", "PBSB", "CLG", "CS"},
+            "modern": {"GL", "ST", "PDI", "PAN", "PDS", "PBS"}
+        }
+        return thematic_keywords.get(build_type, thematic_keywords["house"])  # Default to house if no keyword matches
 
     def initialize_population(self):
         # Create an initial population based on the initial build
@@ -32,10 +44,10 @@ class GeneticAlgorithm:
                 mutated_row = []
                 for block_idx, block in enumerate(row):
                     if random.random() < self.mutation_rate:
-                        # Mutate the block (e.g., change it to a random block)
+                        # Mutate the block (e.g., change it to a random block from the allowed blocks)
                         # Prioritize mutating interior blocks (not walls or roof)
                         if self.is_interior_block(layer_idx, row_idx, block_idx, build):
-                            mutated_row.append(self.get_random_block())
+                            mutated_row.append(self.get_random_allowed_block())
                         else:
                             mutated_row.append(block)  # Preserve walls and roof
                     else:
@@ -55,10 +67,9 @@ class GeneticAlgorithm:
             return False  # Outer columns are walls
         return True  # Interior block
 
-    def get_random_block(self):
-        # Return a random block from the block abbreviations
-        blocks = list(block_abbreviations.keys())
-        return random.choice(blocks)
+    def get_random_allowed_block(self):
+        # Return a random block from the allowed blocks
+        return random.choice(list(self.allowed_blocks))
 
     def crossover(self, parent1, parent2):
         # Perform crossover between two parents to create a child
