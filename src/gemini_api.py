@@ -35,10 +35,15 @@ def generate_build_with_gemini(size, build_type, description):
         It should sparsely use decorative blocks selected from the interior section to add to the aesthetic. 
         Interior blocks:
 
-        "LT": "minecraft:lantern",
-        "CH": "minecraft:chest",
-        "FW": "minecraft:furnace",
-        “CT”: "minecraft:crafting_table,
+        "CT": "minecraft:crafting_table",
+        "FN": "minecraft:furnace",
+        "BF": "minecraft:blast_furnace",
+        "SM": "minecraft:smoker",
+        "CBF": "minecraft:cartography_table",
+        "LBF": "minecraft:loom",
+        "SFB": "minecraft:smithing_table",
+        "STB": "minecraft:stonecutter",
+        "BFB": "minecraft:barrel"
 
         6. **Entrance**: There must be exactly one open entrance, sized 1x1x2,
         located in the center of one of the walls.
