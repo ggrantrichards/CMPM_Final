@@ -101,7 +101,16 @@ def generate_build_with_gemini(size, build_type, description):
         "SD": "minecraft:sandstone",
         "NT": "minecraft:nether_bricks",
         "EB": "minecraft:end_stone_bricks",
-        "GL": "minecraft:glass"
+        "GL": "minecraft:glass",
+        "CT": "minecraft:crafting_table",
+        "FN": "minecraft:furnace",
+        "BF": "minecraft:blast_furnace",
+        "SM": "minecraft:smoker",
+        "CBF": "minecraft:cartography_table",
+        "LBF": "minecraft:loom",
+        "SFB": "minecraft:smithing_table",
+        "STB": "minecraft:stonecutter",
+        "BFB": "minecraft:barrel"
 
         9. **Validation and Regeneration**: If any aspect of the build fails to meet the above criteria
         (e.g., missing floor, random air blocks, incorrect wall design, improper entrance placement/size,
