@@ -43,6 +43,11 @@ def interior_validation(build):
     # Skip the first layer (floor) and the last layer (roof)
     interior_layers = build[1:-1]
 
+    # Check if there are any interior layers
+    if not interior_layers:
+        # If there are no interior layers, penalize the score
+        return -100  # Penalize heavily for invalid builds
+
     # Check the first interior layer (layer 1, after the floor)
     first_interior_layer = interior_layers[0]
 

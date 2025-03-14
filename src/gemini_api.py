@@ -149,6 +149,12 @@ def generate_build_with_gemini(size, build_type, description):
         layers = response_json.get("layers", [])
         if not layers:
             raise ValueError("JSON response does not contain 'layers' key or it is empty.")
+
+        # Validate the structure of the layers
+        for layer in layers:
+            if not isinstance(layer, list) or not all(isinstance(row, list) for row in layer):
+                raise ValueError("Invalid layer structure in JSON response.")
+
         return layers
     except Exception as e:
         print(f"An error occurred while calling the Gemini API: {e}")

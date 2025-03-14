@@ -33,11 +33,14 @@ def generate():
     def generate_and_stream():
         global build_status
         build_status["status"] = "IN_PROGRESS"
-        for _ in generate_build(size, description, build_type):
-            pass
-        # Notify the frontend that the build is complete
-        build_status["status"] = "COMPLETE"
-        yield f"data: BUILD_COMPLETE\n\n"
+        try:
+            for progress in generate_build(size, description, build_type):
+                yield f"data: {progress}\n\n"
+            build_status["status"] = "COMPLETE"
+            yield f"data: BUILD_COMPLETE\n\n"
+        except Exception as e:
+            build_status["status"] = "ERROR"
+            yield f"data: ERROR: {str(e)}\n\n"
 
     # Return the response with stream_with_context
     return Response(stream_with_context(generate_and_stream()), mimetype='text/event-stream')
