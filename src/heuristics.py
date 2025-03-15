@@ -8,7 +8,7 @@ def evaluate_fitness(build):
 
 def four_wall_validation(build):
     # Check if the build has four walls that are similar but not necessarily symmetrical
-    # Return a score based on how many walls the build seems to have 
+    # Return a score based on how many walls the build seems to have
     # Make sure not too many large gaps
     score = 0
 
@@ -44,8 +44,8 @@ def four_wall_validation(build):
 
 def calculate_similarity(wall1, wall2):
     # Calculate the similarity between two walls based on block composition
-    if len(wall1) != len(wall2):
-        return 0  # Walls must be the same length
+    # if len(wall1) != len(wall2):
+    #     return 0  # Do walls really need to be of the same length?
 
     similar_blocks = 0
     total_blocks = 0
@@ -59,10 +59,25 @@ def calculate_similarity(wall1, wall2):
 
 def roofline_validation(build):
     # Check if the build has a defined roofline
-    # Return a score based on The structure of the roof 
+    # Return a score based on The structure of the roof
     # Preferred to have a sloped or tapered design
     score = 0
-    # Implement the logic here
+    if not build:
+        return score
+    roof = build[-1] # Assuming the roof is the last complete layer that we have at the moment. This should just be a solid flat block above the walls.
+                    # Think of it as the base of the roof.
+
+    base_size = len(build[0])
+    roof_size = len(build[-1])
+
+    if base_size != roof_size:
+        return score - 25
+
+    for block in roof:
+        if block == "AA":
+            score -= 25
+        else:
+            continue
     return score
 
 def thematic_consistency(build):
@@ -112,7 +127,7 @@ def thematic_consistency(build):
 
 def interior_validation(build):
     # Check if the interior is mostly hollow
-    # Return a score based on the interior quality 
+    # Return a score based on the interior quality
     # First interior layer: 80% air blocks, 20% useful blocks
     # Remaining interior layers: 95% air blocks, 5% other blocks
     fitness = 0
@@ -155,7 +170,7 @@ def interior_validation(build):
 # def entrance_validation(build):
 #     # Check if there is one open entrance 1x1x2 in the center of a wall
 #     # Return a score based on the entrance quality
-#     # Make sure there is only one entrance and it is in the center of a wall 
+#     # Make sure there is only one entrance and it is in the center of a wall
 #     # If even build size then prefer 2x1x2 entrance
 #     score = 0
 #     # Implement the logic here
