@@ -14,9 +14,11 @@ class GeneticAlgorithm:
         self.build_type = build_type
         self.population_size = population_size
         self.mutation_rate = mutation_rate
+        self.first_interior_layer_meets_ratio = False  # Flag to track if the first interior layer meets the ratio
         self.allowed_blocks = self.get_allowed_blocks(build_type)
         self.population = self.initialize_population()
-        self.first_interior_layer_meets_ratio = False  # Flag to track if the first interior layer meets the ratio
+        
+
 
     def get_allowed_blocks(self, build_type):
         # Define the mapping of keywords to allowed blocks
@@ -37,7 +39,6 @@ class GeneticAlgorithm:
         return population
 
     def mutate_build(self, build):
-        print(f"first_interior_layer_meets_ratio: {self.first_interior_layer_meets_ratio}")  # Debug print
         # Apply random mutations to the build
         mutated_build = []
         for layer_idx, layer in enumerate(build):
@@ -104,7 +105,6 @@ class GeneticAlgorithm:
 
             # Check if the first interior layer meets the desired ratio
             self.first_interior_layer_meets_ratio = self.check_first_interior_layer_ratio()
-            print(f"first_interior_layer_meets_ratio: {self.first_interior_layer_meets_ratio}")  # Debug print
 
         # Return the best build after evolution
         return self.get_best_build()
@@ -137,7 +137,6 @@ class GeneticAlgorithm:
         return random.choice(list(useful_blocks))
 
     def check_first_interior_layer_ratio(self):
-        print(f"Checking first interior layer ratio...")  # Debug print
         # Check if the first interior layer meets the desired ratio (80% air, 20% useful blocks) with 5% leeway
         for build in self.population:
             first_interior_layer = build[1]  # First interior layer is layer 1
@@ -147,8 +146,6 @@ class GeneticAlgorithm:
 
             air_percentage = (air_blocks / total_blocks) * 100
             useful_percentage = (useful_blocks / total_blocks) * 100
-            
-            print(f"Air percentage: {air_percentage}, Useful percentage: {useful_percentage}")  # Debug print
 
             # Check if the ratio is within 5% leeway
             if 75 <= air_percentage <= 85 and 15 <= useful_percentage <= 25:

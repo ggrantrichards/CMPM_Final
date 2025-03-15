@@ -68,6 +68,8 @@ def generate_build(size, description, build_type="default_type"):
 
     # Run the genetic algorithm to improve the build
     print("Starting GA evolution...")
+    print(f"Build: {build}")  # Debug print
+    print(f"Build type: {build_type}")  # Debug print
     try:
         ga = GeneticAlgorithm(build, build_type)
         improved_build = ga.evolve(generations=10)
