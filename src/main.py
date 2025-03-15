@@ -35,6 +35,7 @@ def generate():
         build_status["status"] = "IN_PROGRESS"
         try:
             for progress in generate_build(size, description, build_type):
+                print(f"Progress: {progress}")
                 yield f"data: {progress}\n\n"
             build_status["status"] = "COMPLETE"
             yield f"data: BUILD_COMPLETE\n\n"
