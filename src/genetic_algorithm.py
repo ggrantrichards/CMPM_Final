@@ -9,11 +9,24 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, population_size=10, mutation_rate=0.1):
+    def __init__(self, initial_build, build_type, population_size=100, mutation_rate=0.05):
         self.initial_build = initial_build
+        self.build_type = build_type
         self.population_size = population_size
         self.mutation_rate = mutation_rate
+        self.allowed_blocks = self.get_allowed_blocks(build_type)
         self.population = self.initialize_population()
+        self.first_interior_layer_meets_ratio = False  # Flag to track if the first interior layer meets the ratio
+
+    def get_allowed_blocks(self, build_type):
+        # Define the mapping of keywords to allowed blocks
+        thematic_keywords = {
+            "house": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "OL", "SL", "BL", "DL", "OS", "SS", "BS", "JS", "AS", "DOS"},
+            "castle": {"ST", "CB", "SB", "BR", "NT", "EB"},
+            "nether": {"NT", "BB", "PBS", "PBSB", "CLG", "CS"},
+            "modern": {"GL", "ST", "PDI", "PAN", "PDS", "PBS"}
+        }
+        return thematic_keywords.get(build_type, thematic_keywords["house"])  # Default to house if no keyword matches
 
     def initialize_population(self):
         # Create an initial population based on the initial build
@@ -26,24 +39,40 @@ class GeneticAlgorithm:
     def mutate_build(self, build):
         # Apply random mutations to the build
         mutated_build = []
-        for layer in build:
+        for layer_idx, layer in enumerate(build):
             mutated_layer = []
-            for row in layer:
+            for row_idx, row in enumerate(layer):
                 mutated_row = []
-                for block in row:
+                for block_idx, block in enumerate(row):
                     if random.random() < self.mutation_rate:
-                        # Mutate the block (e.g., change it to a random block)
-                        mutated_row.append(self.get_random_block())
+                        # Only mutate the first interior layer if it hasn't met the ratio
+                        if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
+                            if not self.first_interior_layer_meets_ratio:
+                                mutated_row.append(self.get_random_useful_block())
+                            else:
+                                mutated_row.append(block)  # Skip mutation if the ratio is met
+                        else:
+                            mutated_row.append(block)  # Preserve walls, roof, and other layers
                     else:
                         mutated_row.append(block)
                 mutated_layer.append(mutated_row)
             mutated_build.append(mutated_layer)
         return mutated_build
 
-    def get_random_block(self):
-        # Return a random block from the block abbreviations
-        blocks = list(block_abbreviations.keys())
-        return random.choice(blocks)
+    def is_interior_block(self, layer_idx, row_idx, block_idx, build):
+        # Check if the block is part of the interior (not walls or roof)
+        # Assuming the first and last layers are floor and roof, and the outer rows/columns are walls
+        if layer_idx == 0 or layer_idx == len(build) - 1:
+            return False  # Floor and roof layers are not interior
+        if row_idx == 0 or row_idx == len(build[layer_idx]) - 1:
+            return False  # Outer rows are walls
+        if block_idx == 0 or block_idx == len(build[layer_idx][row_idx]) - 1:
+            return False  # Outer columns are walls
+        return True  # Interior block
+
+    def get_random_allowed_block(self):
+        # Return a random block from the allowed blocks
+        return random.choice(list(self.allowed_blocks))
 
     def crossover(self, parent1, parent2):
         # Perform crossover between two parents to create a child
@@ -56,7 +85,7 @@ class GeneticAlgorithm:
         return child
 
     def evolve(self, generations=10):
-        for _ in range(generations):
+        for generation in range(generations):
             new_population = []
             for _ in range(self.population_size):
                 parent1 = self.select_parent()
@@ -65,6 +94,16 @@ class GeneticAlgorithm:
                 child = self.mutate_build(child)
                 new_population.append(child)
             self.population = new_population
+
+            # Log fitness scores
+            fitness_scores = [evaluate_fitness(build) for build in self.population]
+            average_fitness = sum(fitness_scores) / len(fitness_scores)
+            best_fitness = max(fitness_scores)
+            print(f"Generation {generation + 1}: Average Fitness = {average_fitness}, Best Fitness = {best_fitness}")
+
+            # Check if the first interior layer meets the desired ratio
+            if not self.first_interior_layer_meets_ratio:
+                self.first_interior_layer_meets_ratio = self.check_first_interior_layer_ratio()
 
         # Return the best build after evolution
         return self.get_best_build()
@@ -86,3 +125,28 @@ class GeneticAlgorithm:
         fitness_scores = [evaluate_fitness(build) for build in self.population]
         best_index = fitness_scores.index(max(fitness_scores))
         return self.population[best_index]
+
+    def is_first_interior_layer(self, layer_idx, build):
+        # Check if the layer is the first interior layer (layer 1)
+        return layer_idx == 1  # First interior layer is layer 1 (layer 0 is the floor)
+
+    def get_random_useful_block(self):
+        # Return a random useful block from the allowed blocks
+        useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
+        return random.choice(list(useful_blocks))
+
+    def check_first_interior_layer_ratio(self):
+        # Check if the first interior layer meets the desired ratio (80% air, 20% useful blocks) with 5% leeway
+        for build in self.population:
+            first_interior_layer = build[1]  # First interior layer is layer 1
+            total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
+            air_blocks = sum(row.count("AA") for row in first_interior_layer)
+            useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
+
+            air_percentage = (air_blocks / total_blocks) * 100
+            useful_percentage = (useful_blocks / total_blocks) * 100
+
+            # Check if the ratio is within 5% leeway
+            if 75 <= air_percentage <= 85 and 15 <= useful_percentage <= 25:
+                return True  # Ratio is met
+        return False  # Ratio is not met
