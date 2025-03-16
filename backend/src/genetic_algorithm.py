@@ -1,0 +1,161 @@
+import random
+import json
+import os
+from heuristics import evaluate_fitness
+
+# Load block abbreviations
+data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'block_abbreviations.json')
+with open(data_path, 'r') as f:
+    block_abbreviations = json.load(f)
+
+class GeneticAlgorithm:
+    def __init__(self, initial_build, build_type, allowed_blocks, population_size=100, mutation_rate=0.05):
+        self.initial_build = initial_build
+        self.build_type = build_type
+        self.population_size = population_size
+        self.mutation_rate = mutation_rate
+        self.first_interior_layer_meets_ratio = False  # Flag to track if the first interior layer meets the ratio
+        self.allowed_blocks = set(allowed_blocks)  # Use the allowed blocks from Gemini
+        self.population = self.initialize_population()
+        
+    def get_allowed_blocks(self, build_type):
+        # Define the mapping of keywords to allowed blocks
+        return self.allowed_blocks
+
+    def initialize_population(self):
+        # Create an initial population based on the initial build
+        population = []
+        for _ in range(self.population_size):
+            # Create variations of the initial build
+            population.append(self.mutate_build(self.initial_build))
+        return population
+
+    def mutate_build(self, build):
+    # Apply random mutations to the build
+        mutated_build = []
+        for layer_idx, layer in enumerate(build):
+            mutated_layer = []
+            for row_idx, row in enumerate(layer):
+                mutated_row = []
+                for block_idx, block in enumerate(row):
+                    if random.random() < self.mutation_rate:
+                        # Only mutate the first interior layer if it hasn't met the ratio
+                        if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
+                            # Calculate the current ratio of useful blocks
+                            first_interior_layer = build[1]
+                            total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
+                            useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
+                            useful_percentage = (useful_blocks / total_blocks) * 100
+
+                            if useful_percentage < 20:
+                                # If below the desired ratio, only mutate 20% of the blocks
+                                if random.random() < 0.2:  # 20% chance to mutate
+                                    mutated_row.append(self.get_random_useful_block())  # Introduce useful block
+                                else:
+                                    mutated_row.append(block)  # Preserve the block
+                            elif useful_percentage > 20:
+                                # If above the desired ratio, remove one useful block per mutation cycle
+                                if block in self.get_random_useful_block():
+                                    mutated_row.append("AA")  # Replace useful block with air
+                                else:
+                                    mutated_row.append(block)  # Preserve non-useful blocks
+                            else:
+                                mutated_row.append(block)  # Skip mutation if the ratio is met
+                        else:
+                            mutated_row.append(block)  # Preserve walls, roof, and other layers
+                    else:
+                        mutated_row.append(block)
+                mutated_layer.append(mutated_row)
+            mutated_build.append(mutated_layer)
+        return mutated_build
+
+    def is_interior_block(self, layer_idx, row_idx, block_idx, build):
+        # Check if the block is part of the interior (not walls or roof)
+        # Assuming the first and last layers are floor and roof, and the outer rows/columns are walls
+        if layer_idx == 0 or layer_idx == len(build) - 1:
+            return False  # Floor and roof layers are not interior
+        if row_idx == 0 or row_idx == len(build[layer_idx]) - 1:
+            return False  # Outer rows are walls
+        if block_idx == 0 or block_idx == len(build[layer_idx][row_idx]) - 1:
+            return False  # Outer columns are walls
+        return True  # Interior block
+
+    def get_random_allowed_block(self):
+        # Return a random block from the allowed blocks
+        return random.choice(list(self.allowed_blocks))
+
+    def crossover(self, parent1, parent2):
+        # Perform crossover between two parents to create a child
+        child = []
+        for i in range(len(parent1)):
+            if random.random() < 0.5:
+                child.append(parent1[i])
+            else:
+                child.append(parent2[i])
+        return child
+
+    def evolve(self, generations=10):
+        for generation in range(generations):
+            new_population = []
+            for _ in range(self.population_size):
+                parent1 = self.select_parent()
+                parent2 = self.select_parent()
+                child = self.crossover(parent1, parent2)
+                child = self.mutate_build(child)
+                new_population.append(child)
+            self.population = new_population
+
+            # Log fitness scores
+            fitness_scores = [evaluate_fitness(build, self.allowed_blocks) for build in self.population]
+            average_fitness = sum(fitness_scores) / len(fitness_scores)
+            best_fitness = max(fitness_scores)
+            print(f"Generation {generation + 1}: Average Fitness = {average_fitness}, Best Fitness = {best_fitness}")
+
+            # Check if the first interior layer meets the desired ratio
+            self.first_interior_layer_meets_ratio = self.check_first_interior_layer_ratio()
+
+        # Return the best build after evolution
+        return self.get_best_build()
+
+    def select_parent(self):
+        # Select a parent based on fitness (roulette wheel selection)
+        fitness_scores = [evaluate_fitness(build, self.allowed_blocks) for build in self.population]
+        total_fitness = sum(fitness_scores)
+        pick = random.uniform(0, total_fitness)
+        current = 0
+        for i, build in enumerate(self.population):
+            current += fitness_scores[i]
+            if current > pick:
+                return build
+        return self.population[0]
+
+    def get_best_build(self):
+        # Return the build with the highest fitness score
+        fitness_scores = [evaluate_fitness(build, self.allowed_blocks) for build in self.population]
+        best_index = fitness_scores.index(max(fitness_scores))
+        return self.population[best_index]
+
+    def is_first_interior_layer(self, layer_idx, build):
+        # Check if the layer is the first interior layer (layer 1)
+        return layer_idx == 1  # First interior layer is layer 1 (layer 0 is the floor)
+
+    def get_random_useful_block(self):
+        # Return a random useful block from the allowed blocks
+        useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
+        return random.choice(list(useful_blocks))
+
+    def check_first_interior_layer_ratio(self):
+        # Check if the first interior layer meets the desired ratio (80% air, 20% useful blocks) with 5% leeway
+        for build in self.population:
+            first_interior_layer = build[1]  # First interior layer is layer 1
+            total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
+            air_blocks = sum(row.count("AA") for row in first_interior_layer)
+            useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
+
+            air_percentage = (air_blocks / total_blocks) * 100
+            useful_percentage = (useful_blocks / total_blocks) * 100
+
+            # Check if the ratio is within 5% leeway
+            if 75 <= air_percentage <= 85 and 15 <= useful_percentage <= 25:
+                return True  # Ratio is met
+        return False  # Ratio is not met
