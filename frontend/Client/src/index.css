@@ -68,6 +68,12 @@ body {
   padding: 1.5rem;
 }
 
+/* Override only for BuildVisualization panel */
+/* .build-visualization {
+  display: flex;
+  flex-direction: row;
+} */
+
 .section-title {
   color: var(--accent-green);
   font-size: 1rem;
@@ -194,7 +200,6 @@ body {
   background-color: var(--bg-dark);
   border-radius: 0.5rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -203,6 +208,76 @@ body {
   width: 64px;
   height: 64px;
   color: var(--accent-brown);
+}
+
+.layer-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.nav-button {
+  background: none;
+  border: none;
+  color: var(--accent-green);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-button:disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.layer-indicator {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+}
+
+.layer-display {
+  flex: 1;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.layer-content {
+  margin: 0;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre;
+}
+
+.layer-row {
+  display: flex;
+  justify-content: center;
+}
+
+.layer-cell {
+  width: 3em;
+  height: 3em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-secondary);
 }
 
 .select {
