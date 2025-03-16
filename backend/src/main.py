@@ -125,38 +125,6 @@ def download_schematic():
     schematic_path = os.path.join(build_path, schematic_file)
     return send_file(schematic_path, as_attachment=True)
 
-# get the schematic in base64 for the visualization
-@app.route('/schematic-base64', methods=['GET'])
-def schematic_base64():
-    folder = request.args.get('folder')
-    if not folder:
-        return jsonify({"error": "Folder not specified"}), 400
-
-    build_path = os.path.join(os.path.dirname(__file__), '..', 'output', folder)
-    if not os.path.exists(build_path):
-        return jsonify({"error": "Build not found"}), 404
-
-    # Look for the .schem file
-    schematic_file = None
-    for file in os.listdir(build_path):
-        if file.endswith('.schem'):
-            schematic_file = file
-            break
-
-    if not schematic_file:
-        return jsonify({"error": "Schematic file not found"}), 404
-
-    schematic_path = os.path.join(build_path, schematic_file)
-
-    # Read the schematic file as bytes
-    with open(schematic_path, 'rb') as f:
-        schematic_bytes = f.read()
-
-    # Encode as Base64
-    schematic_base64 = base64.b64encode(schematic_bytes).decode('utf-8')
-
-    return jsonify({"schematic": schematic_base64})
-
 if __name__ == '__main__':
     output_path = os.path.join(os.path.dirname(__file__), '..', 'output')
     if not os.path.exists(output_path):

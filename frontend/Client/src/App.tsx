@@ -88,7 +88,7 @@ function App() {
             </div>
 
             <div>
-              <BuildVisualization selectedBuild={selectedBuild} />
+              <BuildVisualization />
               <div style={{ marginTop: "1.5rem" }}>
                 <SchematicDownload
                   builds={builds}
