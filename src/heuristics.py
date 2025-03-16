@@ -1,8 +1,8 @@
-def evaluate_fitness(build):
+def evaluate_fitness(build, allowed_blocks):
     fitness = 0
     fitness += four_wall_validation(build) * 0.2  # 20% weight
     fitness += roofline_validation(build) * 0.2    # 20% weight
-    fitness += thematic_consistency(build) * 0.2   # 20% weight
+    fitness += thematic_consistency(build, allowed_blocks) * 0.2   # 20% weight
     fitness += interior_validation(build) * 0.4    # 40% weight
     return fitness
 
@@ -80,50 +80,25 @@ def roofline_validation(build):
             continue
     return score
 
-def thematic_consistency(build):
+def thematic_consistency(build, allowed_blocks):
     # Define the mapping of keywords to allowed and disallowed blocks
-    thematic_keywords = {
-        "house": {
-            "allowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "OL", "SL", "BL", "DL", "OS", "SS", "BS", "JS", "AS", "DOS"},
-            "disallowed": {"NT", "OB", "BB", "PBS", "PBSB"}
-        },
-        "castle": {
-            "allowed": {"ST", "CB", "SB", "BR", "NT", "EB"},
-            "disallowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP"}
-        },
-        "nether": {
-            "allowed": {"NT", "BB", "PBS", "PBSB", "CLG", "CS"},
-            "disallowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP"}
-        },
-        "modern": {
-            "allowed": {"GL", "ST", "PDI", "PAN", "PDS", "PBS"},
-            "disallowed": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "NT"}
-        }
-    }
-
-    # Determine the build type from the description
-    build_type = "house"  # Default to house if no keyword matches
-    for keyword in thematic_keywords:
-        if keyword in build_type:
-            build_type = keyword
-            break
-
-    allowed_blocks = thematic_keywords[build_type]["allowed"]
-    disallowed_blocks = thematic_keywords[build_type]["disallowed"]
-
-    # Calculate the thematic consistency score
     score = 0
     total_blocks = 0
+
     for layer in build:
         for row in layer:
             for block in row:
                 total_blocks += 1
                 if block in allowed_blocks:
-                    score += 1
-                elif block in disallowed_blocks:
-                    score -= 1
+                    score += 1  # Reward for using allowed blocks
+                else:
+                    score -= 1  # Penalize for using disallowed blocks
 
-    return score / total_blocks  # Normalize the score
+    # Normalize the score by dividing by the total number of blocks
+    if total_blocks == 0:
+        return 0  # Avoid division by zero
+    return score / total_blocks
+
 
 def interior_validation(build):
     # Check if the interior is mostly hollow

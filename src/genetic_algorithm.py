@@ -9,26 +9,18 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, build_type, population_size=100, mutation_rate=0.05):
+    def __init__(self, initial_build, build_type, allowed_blocks, population_size=100, mutation_rate=0.05):
         self.initial_build = initial_build
         self.build_type = build_type
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.first_interior_layer_meets_ratio = False  # Flag to track if the first interior layer meets the ratio
-        self.allowed_blocks = self.get_allowed_blocks(build_type)
+        self.allowed_blocks = set(allowed_blocks)  # Use the allowed blocks from Gemini
         self.population = self.initialize_population()
         
-
-
     def get_allowed_blocks(self, build_type):
         # Define the mapping of keywords to allowed blocks
-        thematic_keywords = {
-            "house": {"WD", "SP", "BP", "JP", "AP", "DP", "CP", "WP", "OL", "SL", "BL", "DL", "OS", "SS", "BS", "JS", "AS", "DOS"},
-            "castle": {"ST", "CB", "SB", "BR", "NT", "EB"},
-            "nether": {"NT", "BB", "PBS", "PBSB", "CLG", "CS"},
-            "modern": {"GL", "ST", "PDI", "PAN", "PDS", "PBS"}
-        }
-        return thematic_keywords.get(build_type, thematic_keywords["house"])  # Default to house if no keyword matches
+        return self.allowed_blocks
 
     def initialize_population(self):
         # Create an initial population based on the initial build
@@ -77,7 +69,6 @@ class GeneticAlgorithm:
             mutated_build.append(mutated_layer)
         return mutated_build
 
-
     def is_interior_block(self, layer_idx, row_idx, block_idx, build):
         # Check if the block is part of the interior (not walls or roof)
         # Assuming the first and last layers are floor and roof, and the outer rows/columns are walls
@@ -115,7 +106,7 @@ class GeneticAlgorithm:
             self.population = new_population
 
             # Log fitness scores
-            fitness_scores = [evaluate_fitness(build) for build in self.population]
+            fitness_scores = [evaluate_fitness(build, self.allowed_blocks) for build in self.population]
             average_fitness = sum(fitness_scores) / len(fitness_scores)
             best_fitness = max(fitness_scores)
             print(f"Generation {generation + 1}: Average Fitness = {average_fitness}, Best Fitness = {best_fitness}")
@@ -128,7 +119,7 @@ class GeneticAlgorithm:
 
     def select_parent(self):
         # Select a parent based on fitness (roulette wheel selection)
-        fitness_scores = [evaluate_fitness(build) for build in self.population]
+        fitness_scores = [evaluate_fitness(build, self.allowed_blocks) for build in self.population]
         total_fitness = sum(fitness_scores)
         pick = random.uniform(0, total_fitness)
         current = 0
@@ -140,7 +131,7 @@ class GeneticAlgorithm:
 
     def get_best_build(self):
         # Return the build with the highest fitness score
-        fitness_scores = [evaluate_fitness(build) for build in self.population]
+        fitness_scores = [evaluate_fitness(build, self.allowed_blocks) for build in self.population]
         best_index = fitness_scores.index(max(fitness_scores))
         return self.population[best_index]
 

@@ -87,17 +87,15 @@ def generate_build_with_gemini(size, build_type, description):
         "EB": "minecraft:end_stone_bricks",
         "GL": "minecraft:glass"
 
+        Additionally, provide a list of block abbreviations that fit the theme of the build.
         Format the output as a JSON object with a key "layers" containing a list of layers,
         where each layer is a list of rows, and each row is a list of block abbreviations.
+        Also include a key "allowed_blocks" containing a list of block abbreviations that fit the theme.
         """
         response = model.generate_content(prompt)
         
-        # Debugging: Print the entire response object
-        print("Gemini API Response Object:")
-        print(response)
-        
-        # Debugging: Print the raw text from the response
-        print("Gemini API Raw Response Text:")
+        # Print the raw text from the API response
+        print("Raw API Response Text:")
         print(response.text)
         
         raw_text = response.text.strip()
@@ -108,40 +106,31 @@ def generate_build_with_gemini(size, build_type, description):
         try:
             response_json = json.loads(raw_text)
         except json.JSONDecodeError:
-            # If the response is not valid JSON, try to extract JSON from Markdown
             json_match = re.search(r'```json\s*({.*?})\s*```', raw_text, re.DOTALL)
             if json_match:
                 response_json = json.loads(json_match.group(1))
             else:
-                # If no JSON is found, log the raw response for debugging
                 print("No valid JSON found in the response. Raw response:")
                 print(raw_text)
                 raise ValueError("No valid JSON found in the response.")
 
-        # Check if the response contains the "layers" key
-        if "layers" not in response_json:
-            print("Response JSON does not contain 'layers' key. Full response:")
+        # Print the parsed JSON content
+        print("Parsed JSON Content:")
+        print(json.dumps(response_json, indent=4))
+
+        # Check if the response contains the "layers" and "allowed_blocks" keys
+        if "layers" not in response_json or "allowed_blocks" not in response_json:
+            print("Response JSON does not contain 'layers' or 'allowed_blocks' key. Full response:")
             print(response_json)
-            raise ValueError("JSON response does not contain 'layers' key.")
+            raise ValueError("JSON response does not contain 'layers' or 'allowed_blocks' key.")
 
         layers = response_json["layers"]
+        allowed_blocks = response_json["allowed_blocks"]
+
         if not layers:
             raise ValueError("JSON response contains an empty 'layers' list.")
 
-        # Validate the structure of the layers
-        for i, layer in enumerate(layers):
-            if not isinstance(layer, list):
-                print(f"Layer {i} is not a list. Layer content:")
-                print(layer)
-                raise ValueError(f"Layer {i} is not a list.")
-            for j, row in enumerate(layer):
-                if not isinstance(row, list):
-                    print(f"Row {j} in layer {i} is not a list. Row content:")
-                    print(row)
-                    raise ValueError(f"Row {j} in layer {i} is not a list.")
-
-        return layers
+        return layers, allowed_blocks
     except Exception as e:
         print(f"An error occurred while calling the Gemini API: {e}")
-        return []
-
+        return [], []
