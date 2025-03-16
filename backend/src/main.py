@@ -41,11 +41,16 @@ def generate():
     def generate_and_stream():
         global build_status
         build_status["status"] = "IN_PROGRESS"
-        for _ in generate_build(size, description, build_type):
-            pass
-        # Notify the frontend that the build is complete
-        build_status["status"] = "COMPLETE"
-        yield f"data: BUILD_COMPLETE\n\n"
+        
+        for event_data in generate_build(size, description, build_type):
+            if event_data["type"] == "progress":
+                yield f"data: PROGRESS|{event_data['value']}\n\n"
+            elif event_data["type"] == "complete":
+                # Notify the frontend that the build is complete
+                folder = event_data["folder_name"]
+                build_status["status"] = "COMPLETE"
+                build_status["folder_name"] = folder
+                yield f"data: COMPLETE|{folder}\n\n"
 
     # Return the response with stream_with_context
     return Response(stream_with_context(generate_and_stream()), mimetype='text/event-stream')
@@ -55,9 +60,15 @@ def generate():
 def build_status_stream():
     def generate():
         while True:
-            yield f"data: {build_status['status']}\n\n"
+            status = build_status['status']
+            if status == "COMPLETE":
+                folder = build_status.get("folder_name", "")
+                # Send something like "COMPLETE|my_build_20x20_20250316_123456"
+                yield f"data: COMPLETE|{folder}\n\n"
+            else:
+                # If not complete, just send the status, e.g. "IN_PROGRESS"
+                yield f"data: {status}\n\n"
             time.sleep(1)
-
     return Response(generate(), mimetype='text/event-stream')
 
 # List previously generated builds

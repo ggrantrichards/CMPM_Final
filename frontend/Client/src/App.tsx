@@ -21,9 +21,6 @@ function App() {
       const response = await fetch("/list-builds");
       const data = await response.json();
       setBuilds(data.builds);
-      if (data.builds.length > 0) {
-        setSelectedBuild(data.builds[data.builds.length - 1].folder);
-      }
     } catch (error) {
       console.error("Error loading builds:", error);
     }
@@ -45,10 +42,13 @@ function App() {
 
       const eventSource = new EventSource("/build-status");
       eventSource.onmessage = (event) => {
-        const status = event.data.trim();
-        if (status === "COMPLETE") {
+        const data = event.data.trim();
+        if (data.startsWith("COMPLETE|")) {
+          const parts = data.split("|");
+          const folderName = parts[1];
           eventSource.close();
           setIsGenerating(false);
+          setSelectedBuild(folderName);
           loadBuilds();
         }
       };

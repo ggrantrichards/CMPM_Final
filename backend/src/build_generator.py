@@ -18,13 +18,16 @@ def generate_build(size, description, build_type="default_type"):
     safe_description = "".join(c for c in description if c.isalnum() or c in ['-', '_']).lower()
     build_folder = os.path.join(os.path.dirname(__file__), '..', 'output', f"{safe_description}_{size}x{size}_{timestamp}")
     os.makedirs(build_folder, exist_ok=True)
+    folder_name = os.path.basename(build_folder)
+    print("FOLDER NAME" + folder_name)
     
     # Save each layer as a text file in the build folder.
     for i, layer in enumerate(layers):
         with open(os.path.join(build_folder, f'layer_{i}.txt'), 'w') as f:
             for row in layer:
                 f.write(' '.join(row) + '\n')
-        yield int((i + 1) / len(layers) * 100)  # Yield progress
+        progress_percent = int((i + 1) / len(layers) * 100)  # Yield progress
+        yield {"type": "progress", "value": progress_percent}
 
     # Create a schematic file using mcschematic
     schem = mcschematic.MCSchematic()
@@ -37,7 +40,7 @@ def generate_build(size, description, build_type="default_type"):
                 schem.setBlock((x, z, y), block_name)  # (x, z, y) for Minecraft coordinates
 
     # Save the schematic file
-    schem.save(build_folder, f"{build_type}_{size}x{size}_{timestamp}", mcschematic.Version.JE_1_13)
+    schem.save(build_folder, f"{build_type}_{size}x{size}_{timestamp}", mcschematic.Version.JE_1_18_2)
 
     print(f"Build generated with {size}x{size} size and type {build_type}. Files saved in {build_folder}.")
-    yield 100  # Ensure progress is 100% at the end
+    yield {"type": "complete", "folder_name": folder_name}
