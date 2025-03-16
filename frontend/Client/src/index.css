@@ -204,10 +204,26 @@ body {
   justify-content: center;
 }
 
+.visualization-icon-spin {
+  width: 64px;
+  height: 64px;
+  color: var(--accent-brown);
+  animation: spin 2s linear infinite;
+}
+
 .visualization-icon {
   width: 64px;
   height: 64px;
   color: var(--accent-brown);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .layer-navigation {
@@ -272,6 +288,12 @@ body {
   justify-content: center;
 }
 
+.block-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -316,4 +338,14 @@ body {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 645px) {
+  .title {
+    font-size: 4rem;
+  }
+  .header-icon {
+    width: 64px;
+    height: 64px;
+  }
 }

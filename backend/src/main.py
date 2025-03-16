@@ -3,7 +3,6 @@ from build_generator import generate_build
 import sys
 import os
 import time
-import base64
 
 # Initialize Flask app with the correct static and template folders
 dist_dir = os.path.join(os.path.dirname(__file__), '../../frontend/Client/dist')

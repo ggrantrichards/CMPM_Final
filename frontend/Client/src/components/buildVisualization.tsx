@@ -1,15 +1,27 @@
 import { useState, useEffect } from "react";
 import { Cuboid as Cube, ChevronUp, ChevronDown } from "lucide-react";
+import rawBlockAbbreviations from "../assets/block_abbreviations.json";
 
-// interface Layer {
-//   content: string[][];
-// }
+const blockAbbreviations = rawBlockAbbreviations as Record<string, string>;
+
+function getBlockImage(abbr: string): string {
+  // Look up the block name from the JSON; default to "minecraft:air" if missing
+  const blockName = blockAbbreviations[abbr] || "minecraft:air";
+  // Remove the "minecraft:" part
+  const shortName = blockName.replace("minecraft:", "");
+  // Build the final path (assuming your images are in /public/blocks/)
+  return `./blockRepresentations/${shortName}.webp`;
+}
+
+interface BuildVisualizationProps {
+  doSpin: boolean;
+  selectedBuild: string;
+}
 
 export function BuildVisualization({
+  doSpin,
   selectedBuild,
-}: {
-  selectedBuild: string;
-}) {
+}: BuildVisualizationProps) {
   const [layers, setLayers] = useState<string[][][]>([]);
   const [currentLayer, setCurrentLayer] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -53,8 +65,8 @@ export function BuildVisualization({
       <h2 className="section-title">Build Visualization</h2>
       <div className="visualization">
         {loading ? (
-          <Cube className="visualization-icon animate-pulse" />
-        ) : layers.length > 0 ? (
+          <Cube className="visualization-icon" />
+        ) : layers.length > 0 && !doSpin ? (
           <div className="layer-viewer">
             <div className="layer-navigation">
               <button
@@ -76,18 +88,27 @@ export function BuildVisualization({
               </button>
             </div>
             <div className="layer-display">
-              <pre className="layer-content">
+              <div className="layer-content">
                 {layers[currentLayer]?.map((row, i) => (
                   <div key={i} className="layer-row">
                     {row.map((cell, j) => (
-                      <span key={j} className="layer-cell">
-                        {cell}
-                      </span>
+                      <div key={j} className="layer-cell">
+                        <img
+                          src={getBlockImage(cell)}
+                          alt={cell}
+                          className="block-image"
+                        />
+                      </div>
                     ))}
                   </div>
                 ))}
-              </pre>
+              </div>
             </div>
+          </div>
+        ) : doSpin ? (
+          <div className="empty-state">
+            <Cube className="visualization-icon-spin" />
+            <p>Generating your build....</p>
           </div>
         ) : (
           <div className="empty-state">

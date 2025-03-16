@@ -6,12 +6,8 @@ import mcschematic
 
 def generate_build(size, description, build_type="default_type"):
     # Generate layers using the Gemini API.
-    # layers = generate_build_with_gemini(size, build_type, description)
-    layers = [
-        [
-            ["ST"]  # "ST" for "minecraft:stone"
-        ]
-    ]
+    layers = generate_build_with_gemini(size, build_type, description)
+
     # Load block abbreviations.
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'block_abbreviations.json')
     with open(data_path, 'r') as f:

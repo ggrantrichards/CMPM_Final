@@ -35,8 +35,6 @@ function App() {
 
     try {
       setIsGenerating(true);
-      alert("Build generation started! You will be notified when it's done.");
-
       await fetch("/generate", {
         method: "POST",
         headers: {
@@ -49,7 +47,6 @@ function App() {
       eventSource.onmessage = (event) => {
         const status = event.data.trim();
         if (status === "COMPLETE") {
-          alert("Build generation complete! Loading the new build.");
           eventSource.close();
           setIsGenerating(false);
           loadBuilds();
@@ -88,7 +85,10 @@ function App() {
             </div>
 
             <div>
-              <BuildVisualization selectedBuild={selectedBuild} />
+              <BuildVisualization
+                selectedBuild={selectedBuild}
+                doSpin={isGenerating}
+              />
               <div style={{ marginTop: "1.5rem" }}>
                 <SchematicDownload
                   builds={builds}
