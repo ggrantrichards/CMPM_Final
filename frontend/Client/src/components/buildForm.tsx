@@ -42,9 +42,8 @@ export function BuildForm({
           <span>20</span>
         </div>
       </div>
-
-      <div>
-        <h2 className="section-title">Build Description</h2>
+      <h2 className="section-title">Build Description</h2>
+      <div className="prompt-container">
         <textarea
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}

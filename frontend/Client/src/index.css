@@ -142,8 +142,13 @@ body {
   font-size: 0.875rem;
 }
 
+.prompt-container {
+  justify-content: center;
+  display: flex;
+}
+
 .textarea {
-  width: 90%;
+  width: 100%;
   min-height: 100px;
   padding: 0.75rem;
   background-color: var(--bg-dark);
