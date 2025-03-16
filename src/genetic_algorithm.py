@@ -39,7 +39,7 @@ class GeneticAlgorithm:
         return population
 
     def mutate_build(self, build):
-        # Apply random mutations to the build
+    # Apply random mutations to the build
         mutated_build = []
         for layer_idx, layer in enumerate(build):
             mutated_layer = []
@@ -49,18 +49,24 @@ class GeneticAlgorithm:
                     if random.random() < self.mutation_rate:
                         # Only mutate the first interior layer if it hasn't met the ratio
                         if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
-                            if not self.first_interior_layer_meets_ratio:
-                                # Calculate the current ratio of useful blocks
-                                first_interior_layer = build[1]
-                                total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
-                                useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
-                                useful_percentage = (useful_blocks / total_blocks) * 100
+                            # Calculate the current ratio of useful blocks
+                            first_interior_layer = build[1]
+                            total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
+                            useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
+                            useful_percentage = (useful_blocks / total_blocks) * 100
 
-                                # If useful blocks exceed 20%, prioritize introducing air blocks
-                                if useful_percentage > 20:
-                                    mutated_row.append("AA")  # Introduce air block
-                                else:
+                            if useful_percentage < 20:
+                                # If below the desired ratio, only mutate 20% of the blocks
+                                if random.random() < 0.2:  # 20% chance to mutate
                                     mutated_row.append(self.get_random_useful_block())  # Introduce useful block
+                                else:
+                                    mutated_row.append(block)  # Preserve the block
+                            elif useful_percentage > 20:
+                                # If above the desired ratio, remove one useful block per mutation cycle
+                                if block in self.get_random_useful_block():
+                                    mutated_row.append("AA")  # Replace useful block with air
+                                else:
+                                    mutated_row.append(block)  # Preserve non-useful blocks
                             else:
                                 mutated_row.append(block)  # Skip mutation if the ratio is met
                         else:
