@@ -1,54 +1,66 @@
-import React, { useState } from "react";
-import type { GenerateBuildParams } from "../types";
+import React from "react";
+import { Wand2 } from "lucide-react";
+// import type { GenerateBuildParams } from "../types";
 
 interface BuildFormProps {
-  onSubmit: (params: GenerateBuildParams) => void;
+  size: number;
+  description: string;
   isGenerating: boolean;
+  onSizeChange: (size: number) => void;
+  onDescriptionChange: (description: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
 }
 
-export function BuildForm({ onSubmit }: BuildFormProps) {
-  const [size, setSize] = useState<number>(10);
-  const [description, setDescription] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ size, description });
-  };
-
+export function BuildForm({
+  size,
+  description,
+  isGenerating,
+  onSizeChange,
+  onDescriptionChange,
+  onSubmit,
+}: BuildFormProps) {
   return (
-    <form onSubmit={handleSubmit} className="form">
-      <div className="form-group">
-        <label htmlFor="size" className="label">
-          Size (10-30):
-        </label>
+    <form onSubmit={onSubmit}>
+      <div className="range-container">
+        <div className="range-header">
+          <h2 className="section-title">Build Size (10-30 blocks)</h2>
+          <span className="range-value">
+            {size}x{size}
+          </span>
+        </div>
         <input
-          type="number"
-          id="size"
+          type="range"
+          min="10"
+          max="30"
           value={size}
-          onChange={(e) => setSize(parseInt(e.target.value))}
-          min={10}
-          max={30}
-          required
-          className="input"
+          onChange={(e) => onSizeChange(parseInt(e.target.value))}
+          className="range-input"
+          disabled={isGenerating}
         />
+        <div className="range-labels">
+          <span>10</span>
+          <span>30</span>
+        </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description" className="label">
-          Describe the build in a short sentence:
-        </label>
-        <input
-          type="text"
-          id="description"
+      <div>
+        <h2 className="section-title">Build Description</h2>
+        <textarea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="e.g. Japanese house, Medieval castle, small store"
+          onChange={(e) => onDescriptionChange(e.target.value)}
+          placeholder="Describe your Minecraft build..."
+          className="textarea"
+          disabled={isGenerating}
           required
-          className="input"
         />
       </div>
 
-      <button type="submit" className="button button-primary">
+      <button
+        type="submit"
+        className="button button-primary"
+        disabled={isGenerating}
+      >
+        <Wand2 size={20} />
         Generate Build
       </button>
     </form>
