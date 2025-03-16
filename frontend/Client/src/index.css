@@ -3,6 +3,7 @@
   --bg-panel: #3a2d2a;
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
+  --text-error: #ff3333;
   --accent-grass-green: #388724;
   --accent-green: #76c41d;
   --accent-green-hover: #8ed437;
@@ -300,6 +301,10 @@ body {
   align-items: center;
   gap: 1rem;
   color: var(--text-secondary);
+}
+
+.error {
+  color: var(--text-error);
 }
 
 .select {

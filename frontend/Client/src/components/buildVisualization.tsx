@@ -179,7 +179,7 @@ export function BuildVisualization({
         ) : errorMessage ? (
           <div className="empty-state">
             <Cube className="visualization-icon" />
-            <p>
+            <p className="error">
               Build Failed try making a smaller build or use a different prompt
             </p>
             <div> Layer Length: {layers.length} </div>
