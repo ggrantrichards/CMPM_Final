@@ -163,15 +163,3 @@ def interior_validation(build):
         fitness -= air_deviation_layer  # Subtract deviation from fitness
 
     return fitness
-
-
-
-# entrance validation should be done before GA
-# def entrance_validation(build):
-#     # Check if there is one open entrance 1x1x2 in the center of a wall
-#     # Return a score based on the entrance quality
-#     # Make sure there is only one entrance and it is in the center of a wall
-#     # If even build size then prefer 2x1x2 entrance
-#     score = 0
-#     # Implement the logic here
-#     return score

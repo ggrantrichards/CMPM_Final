@@ -50,7 +50,17 @@ class GeneticAlgorithm:
                         # Only mutate the first interior layer if it hasn't met the ratio
                         if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
                             if not self.first_interior_layer_meets_ratio:
-                                mutated_row.append(self.get_random_useful_block())
+                                # Calculate the current ratio of useful blocks
+                                first_interior_layer = build[1]
+                                total_blocks = len(first_interior_layer) * len(first_interior_layer[0])
+                                useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
+                                useful_percentage = (useful_blocks / total_blocks) * 100
+
+                                # If useful blocks exceed 20%, prioritize introducing air blocks
+                                if useful_percentage > 20:
+                                    mutated_row.append("AA")  # Introduce air block
+                                else:
+                                    mutated_row.append(self.get_random_useful_block())  # Introduce useful block
                             else:
                                 mutated_row.append(block)  # Skip mutation if the ratio is met
                         else:
@@ -60,6 +70,7 @@ class GeneticAlgorithm:
                 mutated_layer.append(mutated_row)
             mutated_build.append(mutated_layer)
         return mutated_build
+
 
     def is_interior_block(self, layer_idx, row_idx, block_idx, build):
         # Check if the block is part of the interior (not walls or roof)
