@@ -85,7 +85,16 @@ def generate_build_with_gemini(size, build_type, description):
         "SD": "minecraft:sandstone",
         "NT": "minecraft:nether_bricks",
         "EB": "minecraft:end_stone_bricks",
-        "GL": "minecraft:glass"
+        "GL": "minecraft:glass",
+        "CT": "minecraft:crafting_table",
+        "FN": "minecraft:furnace",
+        "BF": "minecraft:blast_furnace",
+        "SM": "minecraft:smoker",
+        "CBF": "minecraft:cartography_table",
+        "LBF": "minecraft:loom",
+        "SFB": "minecraft:smithing_table",
+        "STB": "minecraft:stonecutter",
+        "BFB": "minecraft:barrel"
 
         Additionally, provide a list of block abbreviations that fit the theme of the build.
         Format the output as a JSON object with a key "layers" containing a list of layers,
