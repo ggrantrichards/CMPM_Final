@@ -108,6 +108,11 @@ def load_build():
             with open(os.path.join(build_path, file), 'r') as f:
                 layer = [line.strip().split(' ') for line in f.readlines()]
                 layers.append(layer)
+    if not layers:
+        return jsonify({
+            "layers": [],
+            "error": "No layer files found"
+        }), 200
 
     return jsonify({"layers": layers})
 

@@ -16,7 +16,7 @@ export function SchematicDownload({
 }: SchematicDownloadProps) {
   return (
     <div className="panel">
-      <h2 className="section-title">Download Schematic</h2>
+      <h2 className="section-title">Build Selector</h2>
       <select
         value={selectedBuild}
         onChange={(e) => onBuildSelect(e.target.value)}

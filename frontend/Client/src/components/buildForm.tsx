@@ -23,23 +23,23 @@ export function BuildForm({
     <form onSubmit={onSubmit}>
       <div className="range-container">
         <div className="range-header">
-          <h2 className="section-title">Build Size (10-30 blocks)</h2>
+          <h2 className="section-title">Build Size (5-20 blocks)</h2>
           <span className="range-value">
             {size}x{size}
           </span>
         </div>
         <input
           type="range"
-          min="10"
-          max="30"
+          min="5"
+          max="20"
           value={size}
           onChange={(e) => onSizeChange(parseInt(e.target.value))}
           className="range-input"
           disabled={isGenerating}
         />
         <div className="range-labels">
-          <span>10</span>
-          <span>30</span>
+          <span>5</span>
+          <span>20</span>
         </div>
       </div>
 
