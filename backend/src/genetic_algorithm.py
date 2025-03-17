@@ -31,8 +31,20 @@ class GeneticAlgorithm:
         return population
 
     def mutate_build(self, build):
-    # Apply random mutations to the build
+        # Apply random mutations to the build
         mutated_build = []
+        
+        # Count the number of each useful block in the build
+        useful_blocks_count = {block: 0 for block in self.get_random_useful_block()}
+        for layer in build:
+            for row in layer:
+                for block in row:
+                    if block in useful_blocks_count:
+                        useful_blocks_count[block] += 1
+
+        # Calculate the total number of useful blocks
+        total_useful_blocks = sum(useful_blocks_count.values())
+        
         for layer_idx, layer in enumerate(build):
             mutated_layer = []
             for row_idx, row in enumerate(layer):
@@ -50,7 +62,25 @@ class GeneticAlgorithm:
                             # Only add a useful block if the current percentage is below the desired threshold
                             if useful_percentage < 20:  # Adjust this threshold as needed
                                 if random.random() < 0.05:  # Further reduce the chance of adding a useful block
-                                    mutated_row.append(self.get_random_useful_block())
+                                    # Select a useful block proportionally based on current counts
+                                    if total_useful_blocks > 0:
+                                        # Calculate the probability of selecting each block
+                                        block_probabilities = {
+                                            block: (1 - (count / total_useful_blocks)) for block, count in useful_blocks_count.items()
+                                        }
+                                        # Normalize probabilities
+                                        total_probability = sum(block_probabilities.values())
+                                        if total_probability > 0:
+                                            block_probabilities = {block: prob / total_probability for block, prob in block_probabilities.items()}
+                                            # Select a block based on the probabilities
+                                            selected_block = random.choices(list(block_probabilities.keys()), weights=block_probabilities.values())[0]
+                                            mutated_row.append(selected_block)
+                                        else:
+                                            # If all blocks are equally distributed, select randomly
+                                            mutated_row.append(self.get_random_useful_block())
+                                    else:
+                                        # If no useful blocks are present, select randomly
+                                        mutated_row.append(self.get_random_useful_block())
                                 else:
                                     mutated_row.append("AA")  # Replace with air block
                             else:
@@ -134,9 +164,9 @@ class GeneticAlgorithm:
         return layer_idx == 1  # First interior layer is layer 1 (layer 0 is the floor)
 
     def get_random_useful_block(self):
-        # Return a random useful block from the allowed blocks
-        useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
-        return random.choice(list(useful_blocks))
+    # Return a list of all useful blocks
+        return ["CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"]
+
 
     def check_first_interior_layer_ratio(self):
         # Check if the first interior layer meets the desired ratio (80% air, 20% useful blocks) with 5% leeway
