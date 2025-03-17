@@ -47,20 +47,14 @@ class GeneticAlgorithm:
                             useful_blocks = sum(row.count(block) for row in first_interior_layer for block in self.get_random_useful_block())
                             useful_percentage = (useful_blocks / total_blocks) * 100
 
-                            if useful_percentage < 20:
-                                # If below the desired ratio, only mutate 20% of the blocks
-                                if random.random() < 0.2:  # 20% chance to mutate
-                                    mutated_row.append(self.get_random_useful_block())  # Introduce useful block
+                            # Only add a useful block if the current percentage is below the desired threshold
+                            if useful_percentage < 10:  # Adjust this threshold as needed
+                                if random.random() < 0.05:  # Further reduce the chance of adding a useful block
+                                    mutated_row.append(self.get_random_useful_block())
                                 else:
-                                    mutated_row.append(block)  # Preserve the block
-                            elif useful_percentage > 20:
-                                # If above the desired ratio, remove one useful block per mutation cycle
-                                if block in self.get_random_useful_block():
-                                    mutated_row.append("AA")  # Replace useful block with air
-                                else:
-                                    mutated_row.append(block)  # Preserve non-useful blocks
+                                    mutated_row.append("AA")  # Replace with air block
                             else:
-                                mutated_row.append(block)  # Skip mutation if the ratio is met
+                                mutated_row.append(block)  # Preserve the block
                         else:
                             mutated_row.append(block)  # Preserve walls, roof, and other layers
                     else:

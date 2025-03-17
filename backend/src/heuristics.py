@@ -103,7 +103,7 @@ def thematic_consistency(build, allowed_blocks):
 def interior_validation(build):
     # Check if the interior is mostly hollow
     # Return a score based on the interior quality
-    # First interior layer: 80% air blocks, 20% useful blocks
+    # First interior layer: 90% air blocks, 10% useful blocks
     # Remaining interior layers: 95% air blocks, 5% other blocks
     fitness = 0
     useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
@@ -121,9 +121,9 @@ def interior_validation(build):
     air_percentage_first_layer = (air_blocks_first_layer / total_blocks_first_layer) * 100
     useful_percentage_first_layer = (useful_blocks_first_layer / total_blocks_first_layer) * 100
 
-    # Calculate deviation from 80% air and 20% useful blocks
-    air_deviation_first_layer = abs(air_percentage_first_layer - 80)
-    useful_deviation_first_layer = abs(useful_percentage_first_layer - 20)
+    # Calculate deviation from 90% air and 10% useful blocks
+    air_deviation_first_layer = abs(air_percentage_first_layer - 90)
+    useful_deviation_first_layer = abs(useful_percentage_first_layer - 10)
     fitness -= (air_deviation_first_layer + useful_deviation_first_layer)  # Subtract deviation from fitness
 
     # Remaining interior layers (no mutations allowed, so no validation needed)
