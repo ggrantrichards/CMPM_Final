@@ -122,8 +122,8 @@ def interior_validation(build):
     useful_percentage_first_layer = (useful_blocks_first_layer / total_blocks_first_layer) * 100
 
     # Calculate deviation from 90% air and 10% useful blocks
-    air_deviation_first_layer = abs(air_percentage_first_layer - 90)
-    useful_deviation_first_layer = abs(useful_percentage_first_layer - 10)
+    air_deviation_first_layer = abs(air_percentage_first_layer - 80)
+    useful_deviation_first_layer = abs(useful_percentage_first_layer - 20)
     fitness -= (air_deviation_first_layer + useful_deviation_first_layer)  # Subtract deviation from fitness
 
     # Remaining interior layers (no mutations allowed, so no validation needed)
@@ -134,7 +134,7 @@ def interior_validation(build):
         air_percentage_layer = (air_blocks_layer / total_blocks_layer) * 100
 
         # Calculate deviation from 95% air blocks
-        air_deviation_layer = abs(air_percentage_layer - 95)
+        air_deviation_layer = abs(air_percentage_layer - 80)
         fitness -= air_deviation_layer  # Subtract deviation from fitness
 
     return fitness

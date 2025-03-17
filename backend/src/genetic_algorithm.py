@@ -48,7 +48,7 @@ class GeneticAlgorithm:
                             useful_percentage = (useful_blocks / total_blocks) * 100
 
                             # Only add a useful block if the current percentage is below the desired threshold
-                            if useful_percentage < 10:  # Adjust this threshold as needed
+                            if useful_percentage < 20:  # Adjust this threshold as needed
                                 if random.random() < 0.05:  # Further reduce the chance of adding a useful block
                                     mutated_row.append(self.get_random_useful_block())
                                 else:
