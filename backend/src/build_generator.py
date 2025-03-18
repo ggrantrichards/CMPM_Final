@@ -55,25 +55,41 @@ def generate_build(size, description, build_type="default_type"):
             center = size // 2 - 1
             door_width = 2
 
-        # Iterate over the second and third layers
+        # Iterate over the second and third layers (layers 1 and 2)
         for layer_idx in [1, 2]:  # Second and third layers
             layer = improved_build[layer_idx]
             
             # North wall (first column)
             for i in range(center, center + door_width):
                 layer[i][0] = "AA"  # Replace with air block
+                if layer_idx == 1:  # First interior layer
+                    layer[i][1] = "AA"  # Clear the block just inside the entrance
+                elif layer_idx == 2:  # Second interior layer
+                    layer[i][1] = "AA"  # Clear the block just inside the entrance
             
             # South wall (last column)
             for i in range(center, center + door_width):
                 layer[i][-1] = "AA"  # Replace with air block
+                if layer_idx == 1:  # First interior layer
+                    layer[i][-2] = "AA"  # Clear the block just inside the entrance
+                elif layer_idx == 2:  # Second interior layer
+                    layer[i][-2] = "AA"  # Clear the block just inside the entrance
             
             # East wall (first row)
             for i in range(center, center + door_width):
                 layer[0][i] = "AA"  # Replace with air block
+                if layer_idx == 1:  # First interior layer
+                    layer[1][i] = "AA"  # Clear the block just inside the entrance
+                elif layer_idx == 2:  # Second interior layer
+                    layer[1][i] = "AA"  # Clear the block just inside the entrance
             
             # West wall (last row)
             for i in range(center, center + door_width):
                 layer[-1][i] = "AA"  # Replace with air block
+                if layer_idx == 1:  # First interior layer
+                    layer[-2][i] = "AA"  # Clear the block just inside the entrance
+                elif layer_idx == 2:  # Second interior layer
+                    layer[-2][i] = "AA"  # Clear the block just inside the entrance
 
     except Exception as e:
         print(f"Error adding doors: {e}")
@@ -131,7 +147,8 @@ def generate_default_build(size):
     layers = [
         [["ST" for _ in range(size)] for _ in range(size)],  # Floor
         [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)],
-        [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)], # Walls
+        [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)],
+        [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)],# Walls
         [["ST" for _ in range(size)] for _ in range(size)]   # Roof
     ]
     allowed_blocks = ["ST", "WD", "AA"]
