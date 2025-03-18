@@ -97,7 +97,8 @@ def generate_build(size, description, build_type="default_type"):
     schem.save(build_folder, f"{build_type}_{size}x{size}_{timestamp}", mcschematic.Version.JE_1_18_2)
 
     print(f"Build generated with {size}x{size} size and type {build_type}. Files saved in {build_folder}.")
-
+    yield {"type": "complete", "folder_name": folder_name}
+    
 def generate_default_build(size):
     # Generate a simple default build
     layers = [
