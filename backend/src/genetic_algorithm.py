@@ -29,39 +29,43 @@ class GeneticAlgorithm:
             # Create variations of the initial build
             mutated_build = self.mutate_build(self.initial_build)
             # Add some useful blocks to the first interior layer
-            for row in mutated_build[1]:  # First interior layer
-                for i in range(len(row)):
-                    if random.random() < 0.1:  # 10% chance to add a useful block
-                        row[i] = random.choice(self.get_random_useful_block())
+            for row_idx, row in enumerate(mutated_build[1]):  # First interior layer
+                for block_idx in range(len(row)):
+                    if self.is_interior_block(1, row_idx, block_idx, mutated_build):  # Check if it's an interior block
+                        if random.random() < 0.1:  # 10% chance to add a useful block
+                            row[block_idx] = random.choice(self.get_random_useful_block())
             population.append(mutated_build)
         return population
-
 
     # Changed random further reduction to .02 to encourage more mutation
     # Changed useful block % to 30
     def mutate_build(self, build):
         # Apply random mutations to the build
         mutated_build = []
-        
+
         # Count the number of each useful block in the build
         useful_blocks_count = {block: 0 for block in self.get_random_useful_block()}
         for layer in build:
             for row in layer:
                 for block in row:
                     if isinstance(block, list):
-                    # print(f"Skipping block because it is a list: {block}")
                         continue  # Skip if block is a list
                     if block in useful_blocks_count:
                         useful_blocks_count[block] += 1
 
         # Calculate the total number of useful blocks
         total_useful_blocks = sum(useful_blocks_count.values())
-        
+
         for layer_idx, layer in enumerate(build):
             mutated_layer = []
             for row_idx, row in enumerate(layer):
                 mutated_row = []
                 for block_idx, block in enumerate(row):
+                    # Skip mutation for border blocks in the first interior layer
+                    if self.is_first_interior_layer(layer_idx, build) and not self.is_interior_block(layer_idx, row_idx, block_idx, build):
+                        mutated_row.append(block)  # Preserve border blocks
+                        continue
+
                     if random.random() <= self.mutation_rate:
                         # Only mutate the first interior layer if it hasn't met the ratio
                         if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
@@ -73,7 +77,7 @@ class GeneticAlgorithm:
 
                             # Only add a useful block if the current percentage is below the desired threshold
                             if useful_percentage < 20:  # Adjust this threshold as needed
-                                if random.random() < 0.2:  # Further reduce the chance of adding a useful block
+                                if random.random() < 0.02:  # Further reduce the chance of adding a useful block
                                     # Select a useful block proportionally based on current counts
                                     if total_useful_blocks > 0:
                                         # Calculate the probability of selecting each block
@@ -179,7 +183,6 @@ class GeneticAlgorithm:
     # Return a list of all useful blocks
         return ["CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"]
 
-
     def check_first_interior_layer_ratio(self):
         # Check if the first interior layer meets the desired ratio (80% air, 20% useful blocks) with 5% leeway
         for build in self.population:
@@ -192,6 +195,6 @@ class GeneticAlgorithm:
             useful_percentage = (useful_blocks / total_blocks) * 100
 
             # Check if the ratio is within 5% leeway
-            if 75 <= air_percentage <= 85 and 15 <= useful_percentage <= 25:
+            if 80 <= air_percentage <= 90 and 10 <= useful_percentage <= 20:
                 return True  # Ratio is met
         return False  # Ratio is not met
