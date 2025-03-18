@@ -1,28 +1,41 @@
 # Minecraft AI Builder using Gemini
 
-## Directory Structure
+## Backend Directory Structure
 
 ### data
     - Holds minecraft block data json of all available blocks
 ### src
     - Holds AI API call and build generation methods
-### static
-    - Holds helper functions in script.js and css styling for frontend
-### templates
-    - Holds index.html
 ### output
     - Holds output of program generation in layer text format and .schem file
 
+## Frontend Directory Structure
+### public
+    - Holds style assets used on the frontend
+### src
+    - Holds the react components for the application
+
 ## Installation
 
-1. Install requirements:
+1. Install requirements for backend:
     ```sh
     pip install -r requirements.txt
     ```
-
+2. Navigate to the frontend:
+    ```sh
+    cd frontend/Client
+    ```
+3. Install requirements for frontend:
+    ```sh
+    npm install
+    ```
+4. Build the application:
+    ```sh
+    npm run build
+    ```
 ## Running the Application
 
-1. Navigate to the backend directory:
+1. Navigate to the backend directory and then run following command:
     ```sh
     cd src
     ```
@@ -31,7 +44,10 @@
     ```sh
     python main.py
     ```
-
+3. Open the App in your browser:
+    ```sh
+    http://127.0.0.1:8080
+    ```
 ## Usage
 
 - Input the desired build in the webpage.
