@@ -9,7 +9,7 @@ with open(data_path, 'r') as f:
     block_abbreviations = json.load(f)
 
 class GeneticAlgorithm:
-    def __init__(self, initial_build, build_type, allowed_blocks, population_size=100, mutation_rate=0.05):
+    def __init__(self, initial_build, build_type, allowed_blocks, population_size=100, mutation_rate=0.1):
         self.initial_build = initial_build
         self.build_type = build_type
         self.population_size = population_size
@@ -30,6 +30,8 @@ class GeneticAlgorithm:
             population.append(self.mutate_build(self.initial_build))
         return population
 
+    # Changed random further reduction to .02 to encourage more mutation
+    # Changed useful block % to 30
     def mutate_build(self, build):
         # Apply random mutations to the build
         mutated_build = []
@@ -53,7 +55,7 @@ class GeneticAlgorithm:
             for row_idx, row in enumerate(layer):
                 mutated_row = []
                 for block_idx, block in enumerate(row):
-                    if random.random() < self.mutation_rate:
+                    if random.random() <= self.mutation_rate:
                         # Only mutate the first interior layer if it hasn't met the ratio
                         if self.is_first_interior_layer(layer_idx, build) and self.is_interior_block(layer_idx, row_idx, block_idx, build):
                             # Calculate the current ratio of useful blocks
@@ -63,8 +65,8 @@ class GeneticAlgorithm:
                             useful_percentage = (useful_blocks / total_blocks) * 100
 
                             # Only add a useful block if the current percentage is below the desired threshold
-                            if useful_percentage < 20:  # Adjust this threshold as needed
-                                if random.random() < 0.05:  # Further reduce the chance of adding a useful block
+                            if useful_percentage < 30:  # Adjust this threshold as needed
+                                if random.random() < 0.02:  # Further reduce the chance of adding a useful block
                                     # Select a useful block proportionally based on current counts
                                     if total_useful_blocks > 0:
                                         # Calculate the probability of selecting each block

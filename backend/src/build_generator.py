@@ -36,8 +36,9 @@ def generate_build(size, description, build_type="default_type"):
     # Run the genetic algorithm to improve the build
     print("Starting GA evolution...")
     try:
-        ga = GeneticAlgorithm(build, build_type, allowed_blocks, population_size=100, mutation_rate=0.1)
-        improved_build = ga.evolve(generations=100)
+        # Changed mutation rate to 0.2 and generations to 25
+        ga = GeneticAlgorithm(build, build_type, allowed_blocks, population_size=100, mutation_rate=0.2)
+        improved_build = ga.evolve(generations=25)
     except Exception as e:
         print(f"Error during GA execution: {e}")
         raise

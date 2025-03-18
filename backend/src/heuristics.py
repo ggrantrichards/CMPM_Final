@@ -1,9 +1,8 @@
 def evaluate_fitness(build, allowed_blocks):
     fitness = 0
-    # Does not need to sum to 100%
-    fitness += roofline_validation(build) * 0.4
-    fitness += thematic_consistency(build, allowed_blocks) * 0.6 # I think these two are equally important for an aesthetic build
-    fitness += interior_validation(build) * 0.6
+    fitness += roofline_validation(build) * .2
+    fitness += thematic_consistency(build, allowed_blocks) * .4 # I think these two are equally important for an aesthetic build
+    fitness += interior_validation(build) * .4
     return fitness
 
 # Removed 4 wall validation & calculate similarity
@@ -42,13 +41,14 @@ def roofline_validation(build):
 
     if base_size != roof_size:
         score -= 0.5
-        return score
+    else:
+        score += 0.5
 
     for block in roof:
         if block == "AA":
             score -= 0.2
         else:
-            continue
+            score += 0.2
     return score
 
 def thematic_consistency(build, allowed_blocks):
@@ -74,7 +74,8 @@ def thematic_consistency(build, allowed_blocks):
     # Normalize the score by dividing by the total number of blocks
     if total_blocks == 0:
         return 0  # Avoid division by zero
-    return score / total_blocks
+    fitness = score/total_blocks
+    return fitness
 
 def interior_validation(build):
     # Check if the interior is mostly hollow
@@ -82,7 +83,7 @@ def interior_validation(build):
     # First interior layer: 90% air blocks, 10% useful blocks
     # Remaining interior layers: 95% air blocks, 5% other blocks
     # Can't use 0 otherwise it'll always be a negative fitness.
-    fitness = .5 # Let's say 50% is average fitness, we can assume it's at least averagely fit.
+
     useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
     interior_layers = build[1:-1]  # Skip the first layer (floor) and the last layer (roof)
 
@@ -108,12 +109,11 @@ def interior_validation(build):
     elif total_deviation > .15 and total_deviation <= .25:
         fitness = 0.7
     elif total_deviation > .25 and total_deviation <= .4:
-        fitness = 0.4
+        fitness = 0.5
     elif total_deviation > .4 and total_deviation <= 0.5:
-        fitness = 0.2
+        fitness = 0.35
     else:
-        fitness = 0.1
-
+        fitness = 0.2
 
     # Remaining interior layers (no mutations allowed, so no validation needed)
     # We can optionally enforce 95% air blocks, but mutations are not allowed here
@@ -124,6 +124,5 @@ def interior_validation(build):
 
         # Calculate deviation from 95% air blocks
         air_deviation_layer = abs(air_percentage_layer - 80)
-        fitness -= air_deviation_layer  # Subtract deviation from fitness
-
+        fitness -= air_deviation_layer/100  # Subtract deviation from fitness
     return fitness
