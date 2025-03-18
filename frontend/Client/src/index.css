@@ -17,7 +17,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-dark);
-  background-image: url("dirt.jpg");
+  background-image: url("/dirt.jpg");
   color: var(--text-primary);
 }
 
