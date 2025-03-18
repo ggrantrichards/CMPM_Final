@@ -39,6 +39,9 @@ class GeneticAlgorithm:
         for layer in build:
             for row in layer:
                 for block in row:
+                    if isinstance(block, list):
+                    # print(f"Skipping block because it is a list: {block}")
+                        continue  # Skip if block is a list
                     if block in useful_blocks_count:
                         useful_blocks_count[block] += 1
 
