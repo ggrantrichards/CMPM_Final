@@ -5,16 +5,32 @@ from datetime import datetime
 import mcschematic
 from genetic_algorithm import GeneticAlgorithm
 
+def validate_block_structure(layers):
+    # Ensure that the block structure is valid and does not contain lists within blocks
+    for layer in layers:
+        for row in layer:
+            for block in row:
+                if isinstance(block, list):
+                    return False  # Invalid structure if block is a list
+    return True  # Valid structure
+
 def generate_build(size, description, build_type="default_type"):
     # Generate layers using the Gemini API.
     try:
         build, allowed_blocks = generate_build_with_gemini(size, build_type, description)
+        print(f"Initial build from Gemini API: {json.dumps(build, indent=2)}")
+        print(f"Allowed blocks from Gemini API: {allowed_blocks}")
         if not build:
             print("Using fallback build due to API failure.")
             build, allowed_blocks = generate_default_build(size)
     except Exception as e:
         print(f"Error generating build with Gemini API: {e}")
         print("Using fallback build.")
+        build, allowed_blocks = generate_default_build(size)
+
+    # Validate the block structure before proceeding
+    if not validate_block_structure(build):
+        print("Invalid block structure detected. Using fallback build.")
         build, allowed_blocks = generate_default_build(size)
 
     # Run the genetic algorithm to improve the build
@@ -73,13 +89,21 @@ def generate_build(size, description, build_type="default_type"):
     build_folder = os.path.join(os.path.dirname(__file__), '..', 'output', f"{safe_description}_{size}x{size}_{timestamp}")
     os.makedirs(build_folder, exist_ok=True)
     folder_name = os.path.basename(build_folder)
-    print("FOLDER NAME" + folder_name)
+    print("FOLDER NAME: " + folder_name)
     
     # Save each layer as a text file in the build folder.
     for i, layer in enumerate(improved_build):
         with open(os.path.join(build_folder, f'layer_{i}.txt'), 'w') as f:
             for row in layer:
-                f.write(' '.join(row) + '\n')
+                print(f"Writing row to file: {row}")  # Debugging line
+                # Ensure all items are strings and not lists
+                cleaned_row = []
+                for block in row:
+                    if isinstance(block, list):
+                        cleaned_row.append("AA")  # Replace lists with air blocks
+                    else:
+                        cleaned_row.append(str(block))  # Ensure block is a string
+                f.write(' '.join(cleaned_row) + '\n')
         progress_percent = int((i + 1) / len(improved_build) * 100)  # Yield progress
         yield {"type": "progress", "value": progress_percent}
 
@@ -90,6 +114,8 @@ def generate_build(size, description, build_type="default_type"):
     for z, layer in enumerate(improved_build):
         for y, row in enumerate(layer):
             for x, block_abbr in enumerate(row):
+                if isinstance(block_abbr, list):
+                    block_abbr = "AA"  # Replace lists with air blocks
                 block_name = block_abbreviations.get(block_abbr, "minecraft:air")  # Default to air if abbreviation is not found
                 schem.setBlock((x, z, y), block_name)  # (x, z, y) for Minecraft coordinates
 
