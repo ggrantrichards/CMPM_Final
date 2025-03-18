@@ -27,8 +27,15 @@ class GeneticAlgorithm:
         population = []
         for _ in range(self.population_size):
             # Create variations of the initial build
-            population.append(self.mutate_build(self.initial_build))
+            mutated_build = self.mutate_build(self.initial_build)
+            # Add some useful blocks to the first interior layer
+            for row in mutated_build[1]:  # First interior layer
+                for i in range(len(row)):
+                    if random.random() < 0.1:  # 10% chance to add a useful block
+                        row[i] = random.choice(self.get_random_useful_block())
+            population.append(mutated_build)
         return population
+
 
     # Changed random further reduction to .02 to encourage more mutation
     # Changed useful block % to 30
@@ -65,8 +72,8 @@ class GeneticAlgorithm:
                             useful_percentage = (useful_blocks / total_blocks) * 100
 
                             # Only add a useful block if the current percentage is below the desired threshold
-                            if useful_percentage < 30:  # Adjust this threshold as needed
-                                if random.random() < 0.02:  # Further reduce the chance of adding a useful block
+                            if useful_percentage < 20:  # Adjust this threshold as needed
+                                if random.random() < 0.2:  # Further reduce the chance of adding a useful block
                                     # Select a useful block proportionally based on current counts
                                     if total_useful_blocks > 0:
                                         # Calculate the probability of selecting each block

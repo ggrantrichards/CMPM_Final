@@ -38,7 +38,7 @@ def generate_build(size, description, build_type="default_type"):
     try:
         # Changed mutation rate to 0.2 and generations to 25
         ga = GeneticAlgorithm(build, build_type, allowed_blocks, population_size=100, mutation_rate=0.2)
-        improved_build = ga.evolve(generations=25)
+        improved_build = ga.evolve(generations=50)
     except Exception as e:
         print(f"Error during GA execution: {e}")
         raise
@@ -130,7 +130,8 @@ def generate_default_build(size):
     # Generate a simple default build
     layers = [
         [["ST" for _ in range(size)] for _ in range(size)],  # Floor
-        [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)],  # Walls
+        [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)],
+        [["WD" if x == 0 or x == size - 1 or y == 0 or y == size - 1 else "AA" for x in range(size)] for y in range(size)], # Walls
         [["ST" for _ in range(size)] for _ in range(size)]   # Roof
     ]
     allowed_blocks = ["ST", "WD", "AA"]

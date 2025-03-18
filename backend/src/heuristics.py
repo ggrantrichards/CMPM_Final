@@ -88,7 +88,7 @@ def interior_validation(build):
     interior_layers = build[1:-1]  # Skip the first layer (floor) and the last layer (roof)
 
     if not interior_layers:
-        return -1  # Penalize heavily for invalid builds, this is basically -100% fitness.
+        return -1  # Penalize heavily for invalid builds
 
     # First interior layer
     first_interior_layer = interior_layers[0]
@@ -99,30 +99,18 @@ def interior_validation(build):
     air_percentage_first_layer = (air_blocks_first_layer / total_blocks_first_layer) * 100
     useful_percentage_first_layer = (useful_blocks_first_layer / total_blocks_first_layer) * 100
 
-    # Calculate deviation from 90% air and 10% useful blocks
+    # Calculate deviation from 80% air and 20% useful blocks
     air_deviation_first_layer = abs(air_percentage_first_layer - 80)
     useful_deviation_first_layer = abs(useful_percentage_first_layer - 20)
-    total_deviation = (air_deviation_first_layer/100 + useful_deviation_first_layer/100)  # Subtract deviation from fitness
+    total_deviation = (air_deviation_first_layer / 100 + useful_deviation_first_layer / 100)
 
-    if total_deviation <= .15:
-        fitness = 1
-    elif total_deviation > .15 and total_deviation <= .25:
-        fitness = 0.7
-    elif total_deviation > .25 and total_deviation <= .4:
-        fitness = 0.5
-    elif total_deviation > .4 and total_deviation <= 0.5:
-        fitness = 0.35
+    # Reward if the useful block percentage is within the desired range
+    if 15 <= useful_percentage_first_layer <= 25:
+        fitness = 1  # Full reward
     else:
-        fitness = 0.2
+        fitness = 0.5  # Partial reward
 
-    # Remaining interior layers (no mutations allowed, so no validation needed)
-    # We can optionally enforce 95% air blocks, but mutations are not allowed here
-    for layer in interior_layers[1:]:
-        total_blocks_layer = len(layer) * len(layer[0])
-        air_blocks_layer = sum(row.count("AA") for row in layer)
-        air_percentage_layer = (air_blocks_layer / total_blocks_layer) * 100
+    # Penalize for deviations
+    fitness -= total_deviation
 
-        # Calculate deviation from 95% air blocks
-        air_deviation_layer = abs(air_percentage_layer - 80)
-        fitness -= air_deviation_layer/100  # Subtract deviation from fitness
     return fitness

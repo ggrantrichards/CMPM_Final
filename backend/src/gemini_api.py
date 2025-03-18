@@ -134,6 +134,8 @@ def generate_build_with_gemini(size, build_type, description, max_retries=3):
 
             layers = response_json["layers"]
             allowed_blocks = response_json["allowed_blocks"]
+            # Ensure useful blocks are allowed
+            useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
             
             # Validate the build structure
             if not validate_build_structure(layers):
@@ -141,7 +143,7 @@ def generate_build_with_gemini(size, build_type, description, max_retries=3):
                 continue
 
             # Convert allowed_blocks to a set to ensure it's hashable
-            allowed_blocks = set(allowed_blocks)
+            allowed_blocks = set(allowed_blocks).union(useful_blocks)
             
             if not layers:
                 print(f"Attempt {attempt + 1}: JSON response contains an empty 'layers' list.")
