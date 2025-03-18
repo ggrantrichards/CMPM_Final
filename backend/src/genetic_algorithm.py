@@ -121,7 +121,7 @@ class GeneticAlgorithm:
                 child.append(parent2[i])
         return child
 
-    def evolve(self, generations=10):
+    def evolve(self, generations=25):
         for generation in range(generations):
             new_population = []
             for _ in range(self.population_size):

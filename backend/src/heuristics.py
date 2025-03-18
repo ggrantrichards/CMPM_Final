@@ -1,30 +1,30 @@
-# Vivan Push Test
 def evaluate_fitness(build, allowed_blocks):
     fitness = 0
-    fitness += four_wall_validation(build) * 0.2  # 20% weight
-    fitness += roofline_validation(build) * 0.2    # 20% weight
-    fitness += thematic_consistency(build, allowed_blocks) * 0.2   # 20% weight
-    fitness += interior_validation(build) * 0.4    # 40% weight
+    # Does not need to sum to 100%
+    fitness += roofline_validation(build) * 0.4
+    fitness += thematic_consistency(build, allowed_blocks) * 0.6 # I think these two are equally important for an aesthetic build
+    fitness += interior_validation(build) * 0.6
     return fitness
 
-def four_wall_validation(build):
-    # Check if the build has four walls that are similar but not necessarily symmetrical
-    # Return a score based on how many walls the build seems to have
-    # Make sure not too many large gaps
-    score = 0
-    return score
-
-def calculate_similarity(wall1, wall2):
-    # Calculate the similarity between two walls based on block composition
-    similar_blocks = 0
-    total_blocks = 0
-    for layer1, layer2 in zip(wall1, wall2):
-        for block1, block2 in zip(layer1, layer2):
-            total_blocks += 1
-            if block1 == block2:
-                similar_blocks += 1
-
-    return similar_blocks / total_blocks
+# Removed 4 wall validation & calculate similarity
+# def four_wall_validation(build):
+#     # Check if the build has four walls that are similar but not necessarily symmetrical
+#     # Return a score based on how many walls the build seems to have
+#     # Make sure not too many large gaps
+#     score = 0
+#     return score
+#
+# def calculate_similarity(wall1, wall2):
+#     # Calculate the similarity between two walls based on block composition
+#     similar_blocks = 0
+#     total_blocks = 0
+#     for layer1, layer2 in zip(wall1, wall2):
+#         for block1, block2 in zip(layer1, layer2):
+#             total_blocks += 1
+#             if block1 == block2:
+#                 similar_blocks += 1
+#
+#     return similar_blocks / total_blocks
 
 def roofline_validation(build):
     # Check if the build has a defined roofline
@@ -32,6 +32,7 @@ def roofline_validation(build):
     # Preferred to have a sloped or tapered design
     score = 0
     if not build:
+        score -= 1
         return score
     roof = build[-1] # Assuming the roof is the last complete layer that we have at the moment. This should just be a solid flat block above the walls.
                     # Think of it as the base of the roof.
@@ -40,11 +41,12 @@ def roofline_validation(build):
     roof_size = len(build[-1])
 
     if base_size != roof_size:
-        return score - 25
+        score -= 0.5
+        return score
 
     for block in roof:
         if block == "AA":
-            score -= 25
+            score -= 0.2
         else:
             continue
     return score
@@ -65,9 +67,9 @@ def thematic_consistency(build, allowed_blocks):
                     continue  # Skip if block is a list
                 total_blocks += 1
                 if block in allowed_blocks:
-                    score += 1  # Reward for using allowed blocks
+                    score += 0.75  # Reward for using allowed blocks
                 else:
-                    score -= 1  # Penalize for using disallowed blocks
+                    score -= 0.75 # Penalize for using disallowed blocks
 
     # Normalize the score by dividing by the total number of blocks
     if total_blocks == 0:
@@ -79,12 +81,13 @@ def interior_validation(build):
     # Return a score based on the interior quality
     # First interior layer: 90% air blocks, 10% useful blocks
     # Remaining interior layers: 95% air blocks, 5% other blocks
-    fitness = 0
+    # Can't use 0 otherwise it'll always be a negative fitness.
+    fitness = .5 # Let's say 50% is average fitness, we can assume it's at least averagely fit.
     useful_blocks = {"CT", "FN", "BF", "SM", "CBF", "LBF", "SFB", "STB", "BFB"}
     interior_layers = build[1:-1]  # Skip the first layer (floor) and the last layer (roof)
 
     if not interior_layers:
-        return -100  # Penalize heavily for invalid builds
+        return -1  # Penalize heavily for invalid builds, this is basically -100% fitness.
 
     # First interior layer
     first_interior_layer = interior_layers[0]
@@ -98,7 +101,19 @@ def interior_validation(build):
     # Calculate deviation from 90% air and 10% useful blocks
     air_deviation_first_layer = abs(air_percentage_first_layer - 80)
     useful_deviation_first_layer = abs(useful_percentage_first_layer - 20)
-    fitness -= (air_deviation_first_layer + useful_deviation_first_layer)  # Subtract deviation from fitness
+    total_deviation = (air_deviation_first_layer/100 + useful_deviation_first_layer/100)  # Subtract deviation from fitness
+
+    if total_deviation <= .15:
+        fitness = 1
+    elif total_deviation > .15 and total_deviation <= .25:
+        fitness = 0.7
+    elif total_deviation > .25 and total_deviation <= .4:
+        fitness = 0.4
+    elif total_deviation > .4 and total_deviation <= 0.5:
+        fitness = 0.2
+    else:
+        fitness = 0.1
+
 
     # Remaining interior layers (no mutations allowed, so no validation needed)
     # We can optionally enforce 95% air blocks, but mutations are not allowed here
