@@ -8,6 +8,15 @@ genai.configure(api_key="AIzaSyD35idMpAjsv_t_uoq5jx-7UWEdmDxsB2E")
 # Initialize the model.
 model = genai.GenerativeModel('gemini-2.0-flash')
 
+def validate_build_structure(layers):
+    # Ensure that the build structure is correct and does not contain lists within blocks
+    for layer in layers:
+        for row in layer:
+            for block in row:
+                if isinstance(block, list):
+                    return False  # Invalid structure if block is a list
+    return True  # Valid structure
+
 def generate_build_with_gemini(size, build_type, description, max_retries=3):
     for attempt in range(max_retries):
         try:
@@ -126,6 +135,11 @@ def generate_build_with_gemini(size, build_type, description, max_retries=3):
             layers = response_json["layers"]
             allowed_blocks = response_json["allowed_blocks"]
             
+            # Validate the build structure
+            if not validate_build_structure(layers):
+                print(f"Attempt {attempt + 1}: Invalid build structure (lists within blocks). Retrying...")
+                continue
+
             # Convert allowed_blocks to a set to ensure it's hashable
             allowed_blocks = set(allowed_blocks)
             
