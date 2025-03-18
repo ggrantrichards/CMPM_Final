@@ -11,42 +11,10 @@ def four_wall_validation(build):
     # Return a score based on how many walls the build seems to have
     # Make sure not too many large gaps
     score = 0
-
-    # if not build:
-    #     return score
-
-    # size = len(build[0])
-    # walls = {"north": [], "south": [], "east": [], "west": []}
-
-    # # Extract the walls from all layers
-    # for layer in build:
-    #     north_wall = [row[0] for row in layer]  # First column
-    #     south_wall = [row[-1] for row in layer]  # Last column
-    #     east_wall = layer[0]  # First row
-    #     west_wall = layer[-1]  # Last row
-
-    #     walls["north"].append(north_wall)
-    #     walls["south"].append(south_wall)
-    #     walls["east"].append(east_wall)
-    #     walls["west"].append(west_wall)
-
-    # # Compare each wall to the others and calculate similarity
-    # wall_keys = list(walls.keys())
-    # for i in range(len(wall_keys)):
-    #     for j in range(i + 1, len(wall_keys)):
-    #         similarity = calculate_similarity(walls[wall_keys[i]], walls[wall_keys[j]])
-    #         if similarity >= 0.9:  # 90% similarity
-    #             score += 25  # Add to the score if walls are similar
-    #         else:
-    #             score -= 25  # Penalize if walls are not similar
-
     return score
 
 def calculate_similarity(wall1, wall2):
     # Calculate the similarity between two walls based on block composition
-    # if len(wall1) != len(wall2):
-    #     return 0  # Do walls really need to be of the same length?
-
     similar_blocks = 0
     total_blocks = 0
     for layer1, layer2 in zip(wall1, wall2):
@@ -81,13 +49,19 @@ def roofline_validation(build):
     return score
 
 def thematic_consistency(build, allowed_blocks):
-    # Define the mapping of keywords to allowed and disallowed blocks
+    # Ensure allowed_blocks is a set
+    allowed_blocks = set(allowed_blocks)
+    
     score = 0
     total_blocks = 0
 
     for layer in build:
         for row in layer:
             for block in row:
+                # print(f"Block type: {type(block)}, Block value: {block}")  # Debugging line
+                if isinstance(block, list):
+                    # print(f"Skipping block because it is a list: {block}")
+                    continue  # Skip if block is a list
                 total_blocks += 1
                 if block in allowed_blocks:
                     score += 1  # Reward for using allowed blocks
@@ -98,7 +72,6 @@ def thematic_consistency(build, allowed_blocks):
     if total_blocks == 0:
         return 0  # Avoid division by zero
     return score / total_blocks
-
 
 def interior_validation(build):
     # Check if the interior is mostly hollow

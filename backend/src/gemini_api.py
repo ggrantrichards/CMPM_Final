@@ -125,7 +125,10 @@ def generate_build_with_gemini(size, build_type, description, max_retries=3):
 
             layers = response_json["layers"]
             allowed_blocks = response_json["allowed_blocks"]
-
+            
+            # Convert allowed_blocks to a set to ensure it's hashable
+            allowed_blocks = set(allowed_blocks)
+            
             if not layers:
                 print(f"Attempt {attempt + 1}: JSON response contains an empty 'layers' list.")
                 continue
@@ -136,4 +139,4 @@ def generate_build_with_gemini(size, build_type, description, max_retries=3):
             continue
 
     print("Max retries reached. No valid response from Gemini API.")
-    return [], []
+    return [], set()  # Return an empty set for allowed_blocks
