@@ -95,6 +95,66 @@ def generate_build(size, description, build_type="default_type"):
         print(f"Error adding doors: {e}")
         raise
     
+    # Add roof layers to the build after evolution
+    print("Adding roof layers to the build...")
+    try:
+        # Determine the block type to use for the roof layers
+        last_layer = improved_build[-1]
+        roof_block = None
+        
+        # Find a block from the last layer that is also in the allowed blocks
+        for row in last_layer:
+            for block in row:
+                if block in allowed_blocks and block != "AA":  # Avoid using air blocks
+                    roof_block = block
+                    break
+            if roof_block:
+                break
+        
+        # If no suitable block is found, default to a common block like "ST" (stone)
+        if not roof_block:
+            roof_block = "ST"
+        
+        # Determine the number of additional roof layers to add
+        base_size = len(improved_build[0])  # Size of the base layer
+        current_roof_size = base_size
+
+        # Calculate the number of additional roof layers based on the build size
+        # For larger builds, add more layers to create a smoother pyramid
+        if base_size <= 10:
+            additional_layers = 1
+        elif base_size <= 15:
+            additional_layers = 2
+        else:
+            additional_layers = 3
+        
+        # Add the additional roof layers
+        for i in range(additional_layers):
+            current_roof_size -= 2  # Decrease the size by 2 blocks on each side
+            if current_roof_size < 1:
+                break  # Stop if the roof size becomes too small
+            
+            # Create a new layer with the reduced size
+            new_layer = [[roof_block for _ in range(current_roof_size)] for _ in range(current_roof_size)]
+            
+            # Center the new layer within the build
+            padding = (base_size - current_roof_size) // 2
+            padded_layer = []
+            for _ in range(padding):
+                padded_layer.append(["AA" for _ in range(base_size)])
+            for row in new_layer:
+                padded_row = ["AA" for _ in range(padding)] + row + ["AA" for _ in range(padding)]
+                padded_layer.append(padded_row)
+            for _ in range(padding):
+                padded_layer.append(["AA" for _ in range(base_size)])
+            
+            # Add the new layer to the build
+            improved_build.append(padded_layer)
+        
+    except Exception as e:
+        print(f"Error adding roof: {e}")
+        raise
+    
     # Load block abbreviations.
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'block_abbreviations.json')
     with open(data_path, 'r') as f:
