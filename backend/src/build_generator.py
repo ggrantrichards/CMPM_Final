@@ -94,7 +94,18 @@ def generate_build(size, description, build_type="default_type"):
     except Exception as e:
         print(f"Error adding doors: {e}")
         raise
-    
+
+    print("Finishing Roof Layer...")
+    try:
+        roof = improved_build[-1]
+        roof_dimensions = len(roof)
+        for i in range(roof_dimensions-1, 0, -1):
+            new_layer = [["DP"] * i for _ in range(i)]
+            improved_build.append(new_layer)
+    except:
+        print(f"Error adding roofing: {e}")
+        raise
+
     # Load block abbreviations.
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'block_abbreviations.json')
     with open(data_path, 'r') as f:
