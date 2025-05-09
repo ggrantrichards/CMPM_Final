@@ -2,3 +2,4 @@ Flask==3.0.0
 google-generativeai==0.3.0
 mcschematic
 flask-sse
+python-dotenv
