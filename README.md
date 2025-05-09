@@ -35,6 +35,12 @@
     ```
 ## Running the Application
 
+*** Before running please create a file called `.env` in `backend/src/` with the following content: ***
+```
+GEMINI_API_KEY=your-gemini-api-key-here
+```
+*** You can get any LLM api key or use gemini which was the original LLm for the project here: https://ai.google.dev/gemini-api/docs/api-key ***
+
 1. Navigate to the backend directory and then run following command:
     ```sh
     cd src

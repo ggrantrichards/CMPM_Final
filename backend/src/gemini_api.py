@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # Configure the Gemini API with your API key.
-genai.configure(api_key="GEMINI_API_KEY")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Initialize the model.
 model = genai.GenerativeModel('gemini-2.0-flash')
